@@ -1,16 +1,38 @@
-# React + Vite
+# Amancay Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend en React + Vite para Amancay, conectado a la API de [`amancay2.0-back`](../amancay2.0-back) (Spring Boot).
 
-Currently, two official plugins are available:
+## Requisitos previos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js `^20.19.0 || ^22.13.0 || >=24`
+- El backend [`amancay2.0-back`](../amancay2.0-back) corriendo localmente (por defecto en `http://localhost:8080`) — esta app no tiene datos propios, todas las pantallas consumen esa API.
 
-## React Compiler
+## Instalación
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+cp .env.example .env
+```
 
-## Expanding the ESLint configuration
+Asegurate de tener el backend corriendo (`./mvnw spring-boot:run` desde `amancay2.0-back`, puerto por defecto `8080`) **antes** de levantar el frontend, de lo contrario las peticiones de productos/categorías van a fallar.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Desarrollo
+
+```bash
+npm run dev
+```
+
+La app queda disponible en `http://localhost:5173`.
+
+## Variables de entorno
+
+| Variable | Valor por defecto | Descripción |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | `http://localhost:8080/api` | URL base de la API de `amancay2.0-back` |
+
+## Scripts
+
+- `npm run dev` — levanta el servidor de desarrollo de Vite
+- `npm run build` — genera el build de producción en `dist/`
+- `npm run preview` — sirve el build de producción localmente
+- `npm run lint` — corre ESLint
