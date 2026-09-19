@@ -29,6 +29,22 @@ La app queda disponible en `http://localhost:5173`.
 | Variable | Valor por defecto | Descripción |
 | --- | --- | --- |
 | `VITE_API_BASE_URL` | `http://localhost:8080/api` | URL base de la API de `amancay2.0-back` |
+| `VITE_SUPABASE_URL` | *(obligatoria)* | Project URL de Supabase (Project Settings → Data API) |
+| `VITE_SUPABASE_ANON_KEY` | *(obligatoria)* | Clave pública `anon` / `publishable` del proyecto (Project Settings → API Keys). Nunca la `service_role` |
+
+## Autenticación
+
+El login y el registro se hacen contra **Supabase Auth** (email + contraseña) con `@supabase/supabase-js`; la sesión queda en `localStorage` y el token se refresca solo. Cada request al backend lleva `Authorization: Bearer <access_token>` (ver `src/services/httpClient.js`); el backend crea el usuario en su tabla `users` en la primera request autenticada.
+
+- Rutas públicas: `/`, `/products`, `/products/:id`, `/login`, `/register`, `/forgot-password`, `/reset-password`.
+- Requieren sesión (`/account`): perfil, direcciones, favoritos y mis reseñas.
+- Requieren rol `ADMIN` (`/admin`): usuarios y moderación de reseñas. El rol lo define el backend (`GET /api/me`), no Supabase.
+
+Para que funcione, en el proyecto Supabase hay que tener:
+
+- **Authentication → URL Configuration**: `http://localhost:5173` como *Site URL* y `http://localhost:5173/reset-password` en *Redirect URLs* (el link de recuperar contraseña vuelve ahí).
+- **Authentication → Sign In / Providers → Confirm email**: si está activado, el registro pide confirmar el mail antes de poder entrar (la app muestra "Check your inbox"). Para desarrollo conviene desactivarlo.
+- El backend debe permitir el origen del front por CORS (`CORS_ALLOWED_ORIGINS` en `amancay2.0-back`, por defecto `http://localhost:5173`).
 
 ## Scripts
 

@@ -5,6 +5,7 @@ import Container from '../../components/ui/Container'
 import Button from '../../components/ui/Button'
 import Notice from '../../components/ui/Notice'
 import Loading from '../../components/Loading/Loading'
+import FavoriteButton from '../../components/FavoriteButton/FavoriteButton'
 import { fetchProductById } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
 
@@ -115,7 +116,10 @@ function ProductDetail() {
             </div>
           )}
 
-          <h1 className="title text-3xl mb-3">{product.name}</h1>
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <h1 className="title text-3xl">{product.name}</h1>
+            <FavoriteButton productId={product.id} className="shrink-0" />
+          </div>
 
           {product.shortDescription && <p className="body-text mb-6">{product.shortDescription}</p>}
 
