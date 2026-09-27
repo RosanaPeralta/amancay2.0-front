@@ -5,6 +5,7 @@ const links = [
   { to: '/account/addresses', label: 'Addresses' },
   { to: '/account/favorites', label: 'Favorites' },
   { to: '/account/reviews', label: 'My reviews' },
+  { to: '/account/orders', label: 'Orders' },
 ]
 
 function AccountLayout() {

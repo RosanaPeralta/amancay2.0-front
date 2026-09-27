@@ -164,7 +164,7 @@ function Checkout() {
                       <span className="block font-medium text-dark">
                         {address.street} {address.number}
                       </span>
-                      <span className="block body-text-light">
+                      <span className="block text-dark">
                         {[address.city, address.province, address.country].filter(Boolean).join(', ')}
                       </span>
                     </span>
@@ -191,7 +191,7 @@ function Checkout() {
           <ul className="space-y-2 text-sm">
             {items.map((item) => (
               <li key={item.variantId} className="flex justify-between gap-2">
-                <span className="body-text-light">
+                <span className="text-dark">
                   {item.productName} × {item.quantity}
                 </span>
                 <span className="text-dark">{currencyFormatter.format(item.unitPrice * item.quantity)}</span>

@@ -28,7 +28,7 @@ function CartLineItem({ item }) {
         >
           {item.productName}
         </Link>
-        <p className="body-text-light text-sm">{currencyFormatter.format(item.unitPrice)} each</p>
+        <p className="text-dark text-sm">{currencyFormatter.format(item.unitPrice)} each</p>
       </div>
 
       <input

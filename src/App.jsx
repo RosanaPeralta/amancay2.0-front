@@ -18,6 +18,8 @@ import Profile from './pages/Account/Profile/Profile'
 import Addresses from './pages/Account/Addresses/Addresses'
 import Favorites from './pages/Account/Favorites/Favorites'
 import MyReviews from './pages/Account/MyReviews/MyReviews'
+import Orders from './pages/Account/Orders/Orders'
+import OrderDetail from './pages/Account/Orders/OrderDetail'
 import Users from './pages/Admin/Users/Users'
 import Reviews from './pages/Admin/Reviews/Reviews'
 
@@ -43,6 +45,8 @@ function App() {
               <Route path="addresses" element={<Addresses />} />
               <Route path="favorites" element={<Favorites />} />
               <Route path="reviews" element={<MyReviews />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="orders/:id" element={<OrderDetail />} />
             </Route>
           </Route>
 

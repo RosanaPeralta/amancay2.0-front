@@ -78,7 +78,7 @@ function PaymentMethodForm({ onSubmit, submitLabel = 'Pay', disabled = false }) 
           <Input label="CVV" required value={card.cvv} onChange={set('cvv')} />
         </div>
       ) : (
-        <p className="body-text-light text-sm">
+        <p className="text-dark text-sm">
           The order stays as-is and the payment shows as pending until it's confirmed manually.
         </p>
       )}
