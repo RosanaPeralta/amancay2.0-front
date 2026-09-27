@@ -11,3 +11,17 @@ export function createPayment(orderId, data) {
 export function retryPayment(paymentId, data) {
   return httpClient.post(`/payments/${paymentId}/retry`, data)
 }
+
+export function attachTransferReference(paymentId, transferReference) {
+  return httpClient.patch(`/payments/${paymentId}/transfer-reference`, { transferReference })
+}
+
+// Admin-only on the backend: lists pending payments (transfers awaiting a decision)
+// across every user, not just the caller's own orders.
+export function listPendingPayments() {
+  return httpClient.get('/admin/payments/pending')
+}
+
+export function confirmPayment(paymentId, status) {
+  return httpClient.patch(`/admin/payments/${paymentId}/confirm`, { status })
+}

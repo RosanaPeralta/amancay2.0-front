@@ -98,7 +98,12 @@ function Checkout() {
           )}
 
           {!attemptingPayment && payment?.status === 'PENDIENTE' && (
-            <Notice>Payment pending confirmation (bank transfer). We'll update your order once it's confirmed.</Notice>
+            <>
+              <Notice>Payment pending confirmation (bank transfer).</Notice>
+              <div className="text-center">
+                <Button to={`/account/orders/${order.id}`}>Go to order to submit your transfer reference</Button>
+              </div>
+            </>
           )}
 
           {!attemptingPayment && payment?.status === 'RECHAZADO' && (

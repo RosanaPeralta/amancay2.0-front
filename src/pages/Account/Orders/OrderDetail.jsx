@@ -7,8 +7,9 @@ import Notice from '../../../components/ui/Notice'
 import Loading from '../../../components/Loading/Loading'
 import StatusBadge from '../../../components/ui/StatusBadge'
 import PaymentMethodForm from '../../../components/checkout/PaymentMethodForm'
+import TransferReferenceForm from '../../../components/checkout/TransferReferenceForm'
 import { fetchOrderById, fetchOrderPayments } from '../../../store/slices/ordersSlice'
-import { retryPayment } from '../../../services/paymentsService'
+import { attachTransferReference, retryPayment } from '../../../services/paymentsService'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -44,6 +45,11 @@ function OrderDetail() {
     dispatch(fetchOrderById(id))
   }
 
+  async function handleAttachTransferReference(transferReference) {
+    await attachTransferReference(payments[0].id, transferReference)
+    dispatch(fetchOrderPayments(id))
+  }
+
   const isLoading = orderStatus === 'idle' || orderStatus === 'loading'
 
   if (isLoading) {
@@ -69,6 +75,8 @@ function OrderDetail() {
 
   const latestPayment = payments[0]
   const canRetry = latestPayment?.status === 'RECHAZADO'
+  const canSubmitTransferReference =
+    latestPayment?.method === 'TRANSFERENCIA' && latestPayment?.status === 'PENDIENTE'
 
   return (
     <Container className="py-12">
@@ -129,6 +137,9 @@ function OrderDetail() {
                     <p className="text-dark">{payment.method.replaceAll('_', ' ')}</p>
                     <p className="caption-text">{dateFormatter.format(new Date(payment.createdAt))}</p>
                     {payment.reason && <p className="caption-text">{payment.reason}</p>}
+                    {payment.transferReference && (
+                      <p className="caption-text">Ref: {payment.transferReference}</p>
+                    )}
                   </div>
                   <StatusBadge status={payment.status} />
                 </li>
@@ -138,7 +149,20 @@ function OrderDetail() {
 
           {canRetry && (
             <div className="border-t border-dark/10 pt-4">
+              <h3 className="font-semibold text-dark mb-3">Retry payment</h3>
               <PaymentMethodForm onSubmit={handleRetry} submitLabel="Retry payment" />
+            </div>
+          )}
+
+          {canSubmitTransferReference && (
+            <div className="border-t border-dark/10 pt-4">
+              <p className="text-dark text-sm mb-3">
+                Once you've made the transfer, submit the reference so we can confirm it.
+              </p>
+              <TransferReferenceForm
+                initialValue={latestPayment.transferReference}
+                onSubmit={handleAttachTransferReference}
+              />
             </div>
           )}
         </div>

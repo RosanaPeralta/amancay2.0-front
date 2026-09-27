@@ -9,6 +9,7 @@ import adminUsersReducer from './slices/adminUsersSlice'
 import adminReviewsReducer from './slices/adminReviewsSlice'
 import cartReducer from './slices/cartSlice'
 import ordersReducer from './slices/ordersSlice'
+import adminPaymentsReducer from './slices/adminPaymentsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
     adminReviews: adminReviewsReducer,
     cart: cartReducer,
     orders: ordersReducer,
+    adminPayments: adminPaymentsReducer,
   },
 })

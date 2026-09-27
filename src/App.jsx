@@ -22,6 +22,7 @@ import Orders from './pages/Account/Orders/Orders'
 import OrderDetail from './pages/Account/Orders/OrderDetail'
 import Users from './pages/Admin/Users/Users'
 import Reviews from './pages/Admin/Reviews/Reviews'
+import Payments from './pages/Admin/Payments/Payments'
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
               <Route index element={<Navigate to="/admin/users" replace />} />
               <Route path="users" element={<Users />} />
               <Route path="reviews" element={<Reviews />} />
+              <Route path="payments" element={<Payments />} />
             </Route>
           </Route>
         </Route>
