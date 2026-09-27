@@ -8,6 +8,7 @@ import AdminLayout from './layouts/AdminLayout'
 import Home from './pages/Home/Home'
 import Products from './pages/Products/Products'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
+import Cart from './pages/Cart/Cart'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
@@ -28,6 +29,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

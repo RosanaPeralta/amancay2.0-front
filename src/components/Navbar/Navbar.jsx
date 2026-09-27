@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
 import Container from '../ui/Container'
 import Button from '../ui/Button'
+import CartIcon from '../cart/CartIcon'
 import logo from '../../assets/brand/amancay_logo.png'
 import { selectIsAdmin, signOut } from '../../store/slices/authSlice'
 
@@ -34,6 +35,7 @@ function Navbar() {
           <NavLink to="/products" className={linkClass}>
             Products
           </NavLink>
+          <CartIcon />
           {status === 'authenticated' && (
             <>
               {isAdmin && (
