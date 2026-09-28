@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { listCategories } from '../../services/categoriesService'
+import * as categoriesService from '../../services/categoriesService'
+import { mutationThunk } from '../mutationThunk'
 
 export const fetchCategories = createAsyncThunk(
   'categories/fetchAll',
-  () => listCategories(),
+  () => categoriesService.listCategories(),
   {
     // Categories rarely change and are needed on several screens (Home,
     // ProductDetail) — skip re-fetching once we already have them or a
@@ -14,6 +15,15 @@ export const fetchCategories = createAsyncThunk(
     },
   },
 )
+
+export const createCategory = mutationThunk('categories/create', (data) => categoriesService.createCategory(data))
+export const updateCategory = mutationThunk('categories/update', ({ id, data }) =>
+  categoriesService.updateCategory(id, data),
+)
+export const deleteCategory = mutationThunk('categories/delete', async (id) => {
+  await categoriesService.deleteCategory(id)
+  return id
+})
 
 const categoriesSlice = createSlice({
   name: 'categories',
@@ -36,6 +46,15 @@ const categoriesSlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+      })
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.items.push(action.payload)
+      })
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        state.items = state.items.map((item) => (item.id === action.payload.id ? action.payload : item))
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload)
       })
   },
 })
