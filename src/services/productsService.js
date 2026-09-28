@@ -13,3 +13,19 @@ export function listProducts({ page = 0, size = 20, name, categoryId, isActive, 
 export function getProduct(id) {
   return httpClient.get(`/products/${id}`)
 }
+
+export function createProduct(data) {
+  return httpClient.post('/products', data)
+}
+
+export function updateProduct(id, data) {
+  return httpClient.put(`/products/${id}`, data)
+}
+
+export function deleteProduct(id) {
+  return httpClient.delete(`/products/${id}`)
+}
+
+export function removeProductDiscount(id) {
+  return httpClient.delete(`/products/${id}/discounts`)
+}
