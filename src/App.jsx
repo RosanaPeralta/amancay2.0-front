@@ -18,6 +18,11 @@ import Favorites from './pages/Account/Favorites/Favorites'
 import MyReviews from './pages/Account/MyReviews/MyReviews'
 import Users from './pages/Admin/Users/Users'
 import Reviews from './pages/Admin/Reviews/Reviews'
+import AdminProducts from './pages/Admin/Products/AdminProducts'
+import ProductEdit from './pages/Admin/Products/ProductEdit'
+import Categories from './pages/Admin/Categories/Categories'
+import Discounts from './pages/Admin/Discounts/Discounts'
+import Orders from './pages/Admin/Orders/Orders'
 
 function App() {
   return (
@@ -41,13 +46,20 @@ function App() {
               <Route path="reviews" element={<MyReviews />} />
             </Route>
           </Route>
+        </Route>
 
-          <Route element={<RequireAdmin />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/users" replace />} />
-              <Route path="users" element={<Users />} />
-              <Route path="reviews" element={<Reviews />} />
-            </Route>
+        {/* Admin has its own chrome (top nav, no store navbar/footer). */}
+        <Route element={<RequireAdmin />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/products" replace />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/new" element={<ProductEdit />} />
+            <Route path="products/:id" element={<ProductEdit />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="discounts" element={<Discounts />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="users" element={<Users />} />
+            <Route path="reviews" element={<Reviews />} />
           </Route>
         </Route>
       </Routes>

@@ -6,12 +6,13 @@ import Notice from '../../../components/ui/Notice'
 import Stars from '../../../components/ui/Stars'
 import StatusBadge from '../../../components/ui/StatusBadge'
 import Loading from '../../../components/Loading/Loading'
+import AdminPageHeader from '../../../components/admin/AdminPageHeader'
 import { changeReviewStatus, deleteAdminReview, fetchAdminReviews } from '../../../store/slices/adminReviewsSlice'
 
 const STATUS_FILTERS = [
-  { value: '', label: 'All statuses' },
-  { value: 'PUBLISHED', label: 'Published' },
-  { value: 'HIDDEN', label: 'Hidden' },
+  { value: '', label: 'Todos los estados' },
+  { value: 'PUBLISHED', label: 'Publicadas' },
+  { value: 'HIDDEN', label: 'Ocultas' },
 ]
 
 function Reviews() {
@@ -41,17 +42,19 @@ function Reviews() {
   }
 
   function handleDelete(review) {
-    if (window.confirm('Delete this review permanently?')) run(deleteAdminReview(review.id))
+    if (window.confirm('¿Eliminar esta reseña de forma permanente?')) run(deleteAdminReview(review.id))
   }
 
-  const isLoading = status === 'idle' || status === 'loading'
+  // Keep showing the current rows while a refetch runs; only the first load shows a spinner.
+  const isLoading = status === 'idle' || (status === 'loading' && items.length === 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left">
+      <AdminPageHeader title="Reseñas" subtitle="Publica u oculta lo que los clientes escriben sobre tus productos." />
       <select
         value={statusFilter}
         onChange={handleFilterChange}
-        aria-label="Filter by status"
+        aria-label="Filtrar por estado"
         className="px-4 py-2.5 rounded-full border border-dark/10 bg-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         {STATUS_FILTERS.map((option) => (
@@ -66,12 +69,12 @@ function Reviews() {
       {isLoading ? (
         <Loading />
       ) : error ? (
-        <Notice variant="error">Couldn't load reviews: {error}</Notice>
+        <Notice variant="error">No se pudieron cargar las reseñas: {error}</Notice>
       ) : items.length === 0 ? (
-        <Notice>No reviews found.</Notice>
+        <Notice>No se encontraron reseñas.</Notice>
       ) : (
         <>
-          <p className="caption-text">{totalElements} reviews</p>
+          <p className="caption-text">{totalElements} reseñas</p>
           <ul className="space-y-4">
             {items.map((review) => (
               <li key={review.id} className="rounded-lg border border-dark/10 bg-white p-5">
@@ -84,24 +87,24 @@ function Reviews() {
                     {review.title && <p className="font-medium text-dark">{review.title}</p>}
                     {review.comment && <p className="body-text text-sm whitespace-pre-line">{review.comment}</p>}
                     <p className="caption-text mt-2">
-                      {review.authorName || 'Anonymous'} · {new Date(review.createdAt).toLocaleDateString('en-US')} ·{' '}
+                      {review.authorName || 'Anónimo'} · {new Date(review.createdAt).toLocaleDateString('es-AR')} ·{' '}
                       <Link to={`/products/${review.productId}`} className="text-primary hover-primary-light">
-                        View product
+                        Ver producto
                       </Link>
                     </p>
                   </div>
                   <div className="flex gap-2">
                     {review.status === 'PUBLISHED' ? (
                       <Button variant="outline" onClick={() => run(changeReviewStatus({ id: review.id, status: 'HIDDEN' }))}>
-                        Hide
+                        Ocultar
                       </Button>
                     ) : (
                       <Button variant="outline" onClick={() => run(changeReviewStatus({ id: review.id, status: 'PUBLISHED' }))}>
-                        Publish
+                        Publicar
                       </Button>
                     )}
                     <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/5" onClick={() => handleDelete(review)}>
-                      Delete
+                      Eliminar
                     </Button>
                   </div>
                 </div>
@@ -112,13 +115,13 @@ function Reviews() {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4">
               <Button variant="outline" onClick={() => setPageNumber((n) => Math.max(0, n - 1))} disabled={pageNumber === 0}>
-                Previous
+                Anterior
               </Button>
               <span className="text-sm text-dark/70">
-                Page {page + 1} of {totalPages || 1}
+                Página {page + 1} de {totalPages || 1}
               </span>
               <Button variant="outline" onClick={() => setPageNumber((n) => n + 1)} disabled={pageNumber + 1 >= totalPages}>
-                Next
+                Siguiente
               </Button>
             </div>
           )}

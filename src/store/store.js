@@ -7,6 +7,8 @@ import favoritesReducer from './slices/favoritesSlice'
 import myReviewsReducer from './slices/myReviewsSlice'
 import adminUsersReducer from './slices/adminUsersSlice'
 import adminReviewsReducer from './slices/adminReviewsSlice'
+import adminProductsReducer from './slices/adminProductsSlice'
+import discountsReducer from './slices/discountsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +20,7 @@ export const store = configureStore({
     myReviews: myReviewsReducer,
     adminUsers: adminUsersReducer,
     adminReviews: adminReviewsReducer,
+    adminProducts: adminProductsReducer,
+    discounts: discountsReducer,
   },
 })
