@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthCard from '../../components/auth/AuthCard'
+import registerImage from '../../assets/gallery/gallery2.png'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Notice from '../../components/ui/Notice'
@@ -23,11 +24,11 @@ function Register() {
     event.preventDefault()
     setError(null)
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError('La contraseña debe tener al menos 6 caracteres.')
       return
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Las contraseñas no coinciden.')
       return
     }
     setSubmitting(true)
@@ -47,13 +48,13 @@ function Register() {
 
   if (pendingConfirmation) {
     return (
-      <AuthCard title="Check your inbox">
+      <AuthCard title="Revisa tu bandeja de entrada" image={registerImage}>
         <Notice>
-          We sent a confirmation link to <strong>{email}</strong>. Open it to activate your account, then log in.
+          Enviamos un enlace de confirmación a <strong>{email}</strong>. Ábrelo para activar tu cuenta y luego inicia sesión.
         </Notice>
         <div className="mt-6 text-center">
           <Button to="/login" variant="outline">
-            Go to log in
+            Ir a iniciar sesión
           </Button>
         </div>
       </AuthCard>
@@ -62,19 +63,21 @@ function Register() {
 
   return (
     <AuthCard
-      title="Create account"
+      title="Crea tu cuenta"
+      subtitle="Guarda tu equipo favorito y reseña lo que ya probaste."
+      image={registerImage}
       footer={
         <>
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary font-medium hover-primary-light">
-            Log in
+          ¿Ya tienes una cuenta?{' '}
+          <Link to="/login" className="font-bold text-primary hover-primary-light">
+            Iniciar sesión
           </Link>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
-          label="Name"
+          label="Nombre"
           type="text"
           autoComplete="name"
           required
@@ -83,7 +86,7 @@ function Register() {
           onChange={(event) => setName(event.target.value)}
         />
         <Input
-          label="Email"
+          label="Correo electrónico"
           type="email"
           autoComplete="email"
           required
@@ -91,7 +94,7 @@ function Register() {
           onChange={(event) => setEmail(event.target.value)}
         />
         <Input
-          label="Password"
+          label="Contraseña"
           type="password"
           autoComplete="new-password"
           required
@@ -100,7 +103,7 @@ function Register() {
           onChange={(event) => setPassword(event.target.value)}
         />
         <Input
-          label="Confirm password"
+          label="Confirmar contraseña"
           type="password"
           autoComplete="new-password"
           required
@@ -109,7 +112,7 @@ function Register() {
         />
         {error && <p className="text-sm text-danger">{error}</p>}
         <Button type="submit" className="w-full" disabled={submitting}>
-          {submitting ? 'Creating account...' : 'Sign up'}
+          {submitting ? 'Creando cuenta...' : 'Crear cuenta'}
         </Button>
       </form>
     </AuthCard>

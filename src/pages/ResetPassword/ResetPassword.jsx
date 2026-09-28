@@ -17,11 +17,11 @@ function ResetPassword() {
     event.preventDefault()
     setError(null)
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError('La contraseña debe tener al menos 6 caracteres.')
       return
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Las contraseñas no coinciden.')
       return
     }
     setSubmitting(true)
@@ -35,10 +35,10 @@ function ResetPassword() {
   }
 
   return (
-    <AuthCard title="Choose a new password">
+    <AuthCard title="Elige una nueva contraseña" subtitle="Elige una contraseña que no hayas usado antes aquí.">
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
-          label="New password"
+          label="Nueva contraseña"
           type="password"
           autoComplete="new-password"
           required
@@ -47,7 +47,7 @@ function ResetPassword() {
           onChange={(event) => setPassword(event.target.value)}
         />
         <Input
-          label="Confirm new password"
+          label="Confirmar nueva contraseña"
           type="password"
           autoComplete="new-password"
           required
@@ -56,7 +56,7 @@ function ResetPassword() {
         />
         {error && <p className="text-sm text-danger">{error}</p>}
         <Button type="submit" className="w-full" disabled={submitting}>
-          {submitting ? 'Saving...' : 'Save password'}
+          {submitting ? 'Guardando...' : 'Guardar contraseña'}
         </Button>
       </form>
     </AuthCard>
