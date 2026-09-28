@@ -18,14 +18,17 @@ async function authHeader() {
 }
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(await authHeader()),
-      ...options.headers,
-    },
-  })
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(await authHeader()),
+    ...options.headers,
+  }
+  let response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers })
+  } catch {
+    throw new ApiError('No se pudo conectar con el servidor. Revisa tu conexión.', 0)
+  }
 
   if (response.status === 204) return null
 
@@ -35,7 +38,7 @@ async function request(path, options = {}) {
     : await response.text()
 
   if (!response.ok) {
-    const message = typeof body === 'string' ? body : body?.error || `Request failed (${response.status})`
+    const message = typeof body === 'string' ? body : body?.error || `La solicitud falló (${response.status})`
     throw new ApiError(message, response.status, typeof body === 'object' ? body?.fields : undefined)
   }
 

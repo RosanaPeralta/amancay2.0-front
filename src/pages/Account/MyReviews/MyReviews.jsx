@@ -27,7 +27,7 @@ function MyReviews() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('Delete this review?')) return
+    if (!window.confirm('¿Eliminar esta reseña?')) return
     setActionError(null)
     try {
       await dispatch(deleteMyReview(id)).unwrap()
@@ -39,8 +39,8 @@ function MyReviews() {
   const isLoading = status === 'idle' || status === 'loading'
 
   if (isLoading) return <Loading />
-  if (error) return <Notice variant="error">Couldn't load your reviews: {error}</Notice>
-  if (items.length === 0) return <Notice>You haven't written any reviews yet.</Notice>
+  if (error) return <Notice variant="error">No se pudieron cargar tus reseñas: {error}</Notice>
+  if (items.length === 0) return <Notice>Todavía no escribiste ninguna reseña.</Notice>
 
   return (
     <div className="space-y-4">
@@ -58,19 +58,19 @@ function MyReviews() {
                 {review.title && <p className="font-medium text-dark">{review.title}</p>}
                 {review.comment && <p className="body-text text-sm whitespace-pre-line">{review.comment}</p>}
                 <p className="caption-text mt-2">
-                  {new Date(review.createdAt).toLocaleDateString('en-US')} ·{' '}
+                  {new Date(review.createdAt).toLocaleDateString('es-AR')} ·{' '}
                   <Link to={`/products/${review.productId}`} className="text-primary hover-primary-light">
-                    View product
+                    Ver producto
                   </Link>
                 </p>
               </div>
               {editingId !== review.id && (
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setEditingId(review.id)}>
-                    Edit
+                    Editar
                   </Button>
                   <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/5" onClick={() => handleDelete(review.id)}>
-                    Delete
+                    Eliminar
                   </Button>
                 </div>
               )}
@@ -90,13 +90,13 @@ function MyReviews() {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-4 mt-6">
           <Button variant="outline" onClick={() => setPageNumber((n) => Math.max(0, n - 1))} disabled={pageNumber === 0}>
-            Previous
+            Anterior
           </Button>
           <span className="text-sm text-dark/70">
-            Page {page + 1} of {totalPages || 1}
+            Página {page + 1} de {totalPages || 1}
           </span>
           <Button variant="outline" onClick={() => setPageNumber((n) => n + 1)} disabled={pageNumber + 1 >= totalPages}>
-            Next
+            Siguiente
           </Button>
         </div>
       )}

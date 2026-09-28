@@ -27,7 +27,7 @@ function FavoriteButton({ productId, className = '' }) {
       onClick={handleClick}
       disabled={isPending}
       aria-pressed={isFavorite}
-      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
       className={`inline-flex items-center justify-center h-10 w-10 rounded-full bg-white/90 border border-dark/10 transition-colors hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-60 ${
         isFavorite ? 'text-info-pink' : 'text-dark/50 hover:text-info-pink'
       } ${className}`}

@@ -18,8 +18,8 @@ function Favorites() {
   const isLoading = status === 'idle' || status === 'loading'
 
   if (isLoading) return <ProductGridSkeleton count={6} />
-  if (error) return <Notice variant="error">Couldn't load your favorites: {error}</Notice>
-  if (items.length === 0) return <Notice>You haven't saved any favorites yet.</Notice>
+  if (error) return <Notice variant="error">No se pudieron cargar tus favoritos: {error}</Notice>
+  if (items.length === 0) return <Notice>Todavía no guardaste ningún favorito.</Notice>
 
   return (
     <>
@@ -34,13 +34,13 @@ function Favorites() {
             </Link>
             {!favorite.active && (
               <span className="self-start px-2 py-0.5 rounded-full border border-dark/10 text-dark/60 text-xs">
-                Unavailable
+                No disponible
               </span>
             )}
             <div className="mt-auto flex items-center justify-between pt-2">
-              <span className="caption-text">Saved {new Date(favorite.createdAt).toLocaleDateString('en-US')}</span>
+              <span className="caption-text">Guardado el {new Date(favorite.createdAt).toLocaleDateString('es-AR')}</span>
               <Button variant="outline" onClick={() => dispatch(toggleFavorite({ productId: favorite.productId, favorite: false }))}>
-                Remove
+                Quitar
               </Button>
             </div>
           </div>
@@ -50,13 +50,13 @@ function Favorites() {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-4 mt-10">
           <Button variant="outline" onClick={() => setPageNumber((n) => Math.max(0, n - 1))} disabled={pageNumber === 0}>
-            Previous
+            Anterior
           </Button>
           <span className="text-sm text-dark/70">
-            Page {page + 1} of {totalPages || 1}
+            Página {page + 1} de {totalPages || 1}
           </span>
           <Button variant="outline" onClick={() => setPageNumber((n) => n + 1)} disabled={pageNumber + 1 >= totalPages}>
-            Next
+            Siguiente
           </Button>
         </div>
       )}

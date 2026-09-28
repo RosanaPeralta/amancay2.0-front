@@ -3,13 +3,14 @@ import { supabase } from '../../lib/supabaseClient'
 import { getMe, updateMe } from '../../services/usersService'
 
 const AUTH_ERROR_MESSAGES = {
-  'Invalid login credentials': 'Incorrect email or password.',
-  'User already registered': 'An account with this email already exists.',
-  'Email not confirmed': 'Please confirm your email before logging in.',
-  'Password should be at least 6 characters': 'Password must be at least 6 characters.',
+  'Invalid login credentials': 'Correo o contraseña incorrectos.',
+  'User already registered': 'Ya existe una cuenta con este correo.',
+  'Email not confirmed': 'Confirma tu correo antes de iniciar sesión.',
+  'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
 }
 
 function authErrorMessage(error) {
+  if (error.status === 429) return 'Demasiados intentos. Espera un momento y vuelve a intentarlo.'
   return AUTH_ERROR_MESSAGES[error.message] || error.message
 }
 
