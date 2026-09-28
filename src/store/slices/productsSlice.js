@@ -10,7 +10,7 @@ async function hydrateSummaries(summaries) {
 export const fetchFeaturedProducts = createAsyncThunk(
   'products/fetchFeatured',
   async () => {
-    const page = await listProducts({ page: 0, size: 6, isActive: true })
+    const page = await listProducts({ page: 0, size: 8, isActive: true })
     return hydrateSummaries(page.content)
   },
   {
