@@ -47,10 +47,10 @@ function ProductDetail() {
   if (error) {
     return (
       <Container className="py-12 text-center">
-        <Notice variant="error">Couldn't load this product: {error}</Notice>
+        <Notice variant="error">No se pudo cargar este producto: {error}</Notice>
         <div className="mt-6">
           <Button to="/products" variant="outline">
-            Back to products
+            Volver a productos
           </Button>
         </div>
       </Container>
@@ -67,13 +67,13 @@ function ProductDetail() {
     <Container className="py-12">
       <div className="mb-8">
         <Button to="/products" variant="outline">
-          ← Back to products
+          ← Volver a productos
         </Button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
         <div>
-          <div className="aspect-square bg-light rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="aspect-square bg-mist rounded-lg overflow-hidden flex items-center justify-center">
             {activeImage ? (
               <img
                 src={activeImage.imageUrl}
@@ -81,7 +81,7 @@ function ProductDetail() {
                 className="w-full h-full object-contain"
               />
             ) : (
-              <span className="caption-text">No image</span>
+              <span className="caption-text">Sin imagen</span>
             )}
           </div>
           {images.length > 1 && (
@@ -125,7 +125,7 @@ function ProductDetail() {
 
           <div className="flex flex-col gap-3 border-t border-dark/10 pt-6">
             {(product.variants || []).length === 0 ? (
-              <p className="body-text">No pricing available.</p>
+              <p className="body-text">Precio no disponible.</p>
             ) : (
               product.variants.map((variant) => (
                 <div key={variant.id} className="flex items-center justify-between">
@@ -133,7 +133,7 @@ function ProductDetail() {
                     {currencyFormatter.format(variant.price)}
                   </span>
                   <span className={`text-sm ${variant.stockQuantity > 0 ? 'text-dark/60' : 'text-danger'}`}>
-                    {variant.stockQuantity > 0 ? `${variant.stockQuantity} in stock` : 'Out of stock'}
+                    {variant.stockQuantity > 0 ? `${variant.stockQuantity} en stock` : 'Sin stock'}
                   </span>
                 </div>
               ))
@@ -142,7 +142,7 @@ function ProductDetail() {
 
           {product.description && (
             <div className="mt-8">
-              <h2 className="subtitle-primary text-lg text-dark font-semibold mb-2">Description</h2>
+              <h2 className="subtitle-primary text-lg text-dark font-semibold mb-2">Descripción</h2>
               <p className="body-text whitespace-pre-line">{product.description}</p>
             </div>
           )}
