@@ -8,6 +8,7 @@ import Loading from '../../components/Loading/Loading'
 import FavoriteButton from '../../components/FavoriteButton/FavoriteButton'
 import { fetchProductById } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
+import { addItem } from '../../store/slices/cartSlice'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -22,11 +23,13 @@ function ProductDetail() {
   const { items: categories } = useSelector((state) => state.categories)
 
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [quantities, setQuantities] = useState({})
   const [prevId, setPrevId] = useState(id)
 
   if (id !== prevId) {
     setPrevId(id)
     setActiveImageIndex(0)
+    setQuantities({})
   }
 
   useEffect(() => {
@@ -54,6 +57,28 @@ function ProductDetail() {
           </Button>
         </div>
       </Container>
+    )
+  }
+
+  function quantityFor(variant) {
+    return Math.max(1, Math.min(quantities[variant.id] ?? 1, variant.stockQuantity))
+  }
+
+  function handleQuantityChange(variant, value) {
+    setQuantities((prev) => ({ ...prev, [variant.id]: Number(value) || 1 }))
+  }
+
+  function handleAddToCart(variant) {
+    dispatch(
+      addItem({
+        variantId: variant.id,
+        productId: product.id,
+        productName: product.name,
+        imageUrl: images[0]?.imageUrl ?? null,
+        unitPrice: variant.price,
+        maxStock: variant.stockQuantity,
+        quantity: quantityFor(variant),
+      }),
     )
   }
 
@@ -127,16 +152,34 @@ function ProductDetail() {
             {(product.variants || []).length === 0 ? (
               <p className="body-text">Precio no disponible.</p>
             ) : (
-              product.variants.map((variant) => (
-                <div key={variant.id} className="flex items-center justify-between">
-                  <span className="text-2xl font-semibold text-primary">
-                    {currencyFormatter.format(variant.price)}
-                  </span>
-                  <span className={`text-sm ${variant.stockQuantity > 0 ? 'text-dark/60' : 'text-danger'}`}>
-                    {variant.stockQuantity > 0 ? `${variant.stockQuantity} en stock` : 'Sin stock'}
-                  </span>
-                </div>
-              ))
+              product.variants.map((variant) => {
+                const inStock = variant.stockQuantity > 0
+                return (
+                  <div key={variant.id} className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <span className="text-2xl font-semibold text-primary">
+                        {currencyFormatter.format(variant.price)}
+                      </span>
+                      <span className={`block text-sm ${inStock ? 'text-dark/60' : 'text-danger'}`}>
+                        {inStock ? `${variant.stockQuantity} en stock` : 'Sin stock'}
+                      </span>
+                    </div>
+                    {inStock && (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min={1}
+                          max={variant.stockQuantity}
+                          value={quantityFor(variant)}
+                          onChange={(event) => handleQuantityChange(variant, event.target.value)}
+                          className="w-16 px-3 py-2 rounded-full border border-dark/10 bg-white text-sm text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                        />
+                        <Button onClick={() => handleAddToCart(variant)}>Agregar al carrito</Button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })
             )}
           </div>
 

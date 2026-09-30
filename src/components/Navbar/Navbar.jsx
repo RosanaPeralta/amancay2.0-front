@@ -6,6 +6,7 @@ import Button from '../ui/Button'
 import BrandLogo from '../Brand/BrandLogo'
 import UserMenu from './UserMenu'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
+import CartIcon from '../cart/CartIcon'
 
 // The full list lives in the Products page chips; the navbar only has room for a few.
 const NAV_CATEGORY_LIMIT = 5
@@ -77,6 +78,7 @@ function Navbar() {
               <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
             </svg>
           </Link>
+          <CartIcon />
           {status === 'authenticated' && <UserMenu />}
           {status === 'anonymous' && (
             <Button to="/login" className="!py-2 !px-4">

@@ -8,6 +8,8 @@ import AdminLayout from './layouts/AdminLayout'
 import Home from './pages/Home/Home'
 import Products from './pages/Products/Products'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
+import Cart from './pages/Cart/Cart'
+import Checkout from './pages/Checkout/Checkout'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
@@ -16,13 +18,16 @@ import Profile from './pages/Account/Profile/Profile'
 import Addresses from './pages/Account/Addresses/Addresses'
 import Favorites from './pages/Account/Favorites/Favorites'
 import MyReviews from './pages/Account/MyReviews/MyReviews'
+import Orders from './pages/Account/Orders/Orders'
+import OrderDetail from './pages/Account/Orders/OrderDetail'
 import Users from './pages/Admin/Users/Users'
 import Reviews from './pages/Admin/Reviews/Reviews'
 import AdminProducts from './pages/Admin/Products/AdminProducts'
 import ProductEdit from './pages/Admin/Products/ProductEdit'
 import Categories from './pages/Admin/Categories/Categories'
 import Discounts from './pages/Admin/Discounts/Discounts'
-import Orders from './pages/Admin/Orders/Orders'
+import AdminOrders from './pages/Admin/Orders/Orders'
+import Payments from './pages/Admin/Payments/Payments'
 
 function App() {
   return (
@@ -33,17 +38,21 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route element={<RequireAuth />}>
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/account" element={<AccountLayout />}>
               <Route index element={<Profile />} />
               <Route path="addresses" element={<Addresses />} />
               <Route path="favorites" element={<Favorites />} />
               <Route path="reviews" element={<MyReviews />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="orders/:id" element={<OrderDetail />} />
             </Route>
           </Route>
         </Route>
@@ -57,7 +66,8 @@ function App() {
             <Route path="products/:id" element={<ProductEdit />} />
             <Route path="categories" element={<Categories />} />
             <Route path="discounts" element={<Discounts />} />
-            <Route path="orders" element={<Orders />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="payments" element={<Payments />} />
             <Route path="users" element={<Users />} />
             <Route path="reviews" element={<Reviews />} />
           </Route>
