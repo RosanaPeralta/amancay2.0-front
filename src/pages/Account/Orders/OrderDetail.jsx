@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '../../../components/ui/Button'
 import Panel from '../../../components/ui/Panel'
@@ -29,21 +29,11 @@ function OrderDetail() {
   const dispatch = useDispatch()
   const { item: order, status: orderStatus, error: orderError } = useSelector((state) => state.orders.current)
   const { items: payments, status: paymentsStatus } = useSelector((state) => state.orders.payments)
-  // Order items only carry a productVariantId (the API doesn't return product name/image),
-  // so names are resolved against whatever's already cached from browsing the catalog.
-  const cachedProducts = useSelector((state) =>
-    [...state.products.list.items, ...state.products.featured.items, state.products.current.item].filter(Boolean),
-  )
 
   useEffect(() => {
     dispatch(fetchOrderById(id))
     dispatch(fetchOrderPayments(id))
   }, [dispatch, id])
-
-  function nameForVariant(variantId) {
-    const product = cachedProducts.find((item) => item.variants?.some((variant) => variant.id === variantId))
-    return product ? product.name : `Variante #${variantId.slice(0, 8)}`
-  }
 
   async function handleRetry({ method, card }) {
     await retryPayment(payments[0].id, { method, card })
@@ -96,13 +86,27 @@ function OrderDetail() {
         </div>
 
         <Panel title="Productos">
-          <ul className="space-y-2 text-sm mb-4">
+          <ul className="space-y-3 text-sm mb-4">
             {order.items.map((item) => (
-              <li key={item.id} className="flex justify-between gap-2">
-                <span className="text-dark">
-                  {nameForVariant(item.productVariantId)} × {item.quantity}
-                </span>
-                <span className="text-dark">{currencyFormatter.format(item.subtotal)}</span>
+              <li key={item.id} className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-mist">
+                    {item.imageUrl && <img src={item.imageUrl} alt="" className="h-full w-full object-contain" />}
+                  </div>
+                  <div className="min-w-0">
+                    {item.productId ? (
+                      <Link to={`/products/${item.productId}`} className="font-medium text-dark hover:text-primary">
+                        {item.productName}
+                      </Link>
+                    ) : (
+                      <span className="font-medium text-dark">Producto no disponible</span>
+                    )}
+                    <p className="text-xs text-dark/60">
+                      {item.quantity} × {currencyFormatter.format(item.unitPrice)}
+                    </p>
+                  </div>
+                </div>
+                <span className="shrink-0 text-dark">{currencyFormatter.format(item.subtotal)}</span>
               </li>
             ))}
           </ul>

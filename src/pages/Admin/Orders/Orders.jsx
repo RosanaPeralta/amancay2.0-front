@@ -7,7 +7,6 @@ import FilterChips from '../../../components/admin/FilterChips'
 import SearchField from '../../../components/admin/SearchField'
 import { rowClass, tableWrapClass, tdClass, thClass } from '../../../components/admin/styles'
 import { fetchAdminOrders } from '../../../store/slices/adminOrdersSlice'
-import { fetchAdminProducts } from '../../../store/slices/adminProductsSlice'
 import OrderStatusPill from './OrderStatusPill'
 import OrderDetail from './OrderDetail'
 import { ORDER_STATUSES, itemCount, shortId, statusLabel } from './orderStatus'
@@ -24,8 +23,6 @@ function Orders() {
 
   useEffect(() => {
     dispatch(fetchAdminOrders())
-    // Order items only carry a variant id; the admin catalog resolves product names.
-    dispatch(fetchAdminProducts())
   }, [dispatch])
 
   const query = search.trim().toLowerCase().replace('#', '')

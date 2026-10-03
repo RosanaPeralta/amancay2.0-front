@@ -6,7 +6,7 @@ import Notice from '../../../components/ui/Notice'
 import Stars from '../../../components/ui/Stars'
 import StatusBadge from '../../../components/ui/StatusBadge'
 import Loading from '../../../components/Loading/Loading'
-import ReviewForm from './ReviewForm'
+import ReviewForm from '../../../components/reviews/ReviewForm'
 import { deleteMyReview, fetchMyReviews, updateMyReview } from '../../../store/slices/myReviewsSlice'
 
 function MyReviews() {

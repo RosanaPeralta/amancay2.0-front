@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button'
 import Notice from '../../components/ui/Notice'
 import Loading from '../../components/Loading/Loading'
 import FavoriteButton from '../../components/FavoriteButton/FavoriteButton'
+import ProductReviews from '../../components/reviews/ProductReviews'
 import { fetchProductById } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
 import { addItem } from '../../store/slices/cartSlice'
@@ -191,6 +192,8 @@ function ProductDetail() {
           )}
         </div>
       </div>
+
+      <ProductReviews key={product.id} productId={product.id} />
     </Container>
   )
 }

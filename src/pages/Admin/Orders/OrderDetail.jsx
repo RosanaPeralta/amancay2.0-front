@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import AdminCard from '../../../components/admin/AdminCard'
 import Button from '../../../components/ui/Button'
 import { changeOrderStatus } from '../../../store/slices/adminOrdersSlice'
@@ -12,16 +12,10 @@ const formatDate = (date) =>
 
 function OrderDetail({ order }) {
   const dispatch = useDispatch()
-  const products = useSelector((state) => state.adminProducts.items)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
   const nextStatus = NEXT_STATUS[order.status]
-
-  function productName(variantId) {
-    const product = products.find((item) => item.variants?.some((variant) => variant.id === variantId))
-    return product?.name ?? `Variante #${shortId(variantId)}`
-  }
 
   async function handleAdvance() {
     setError(null)
@@ -50,7 +44,7 @@ function OrderDetail({ order }) {
         {order.items.map((item) => (
           <li key={item.id} className="flex items-start justify-between gap-3 text-sm">
             <div className="min-w-0">
-              <p className="font-bold text-dark">{productName(item.productVariantId)}</p>
+              <p className="font-bold text-dark">{item.productName ?? 'Producto no disponible'}</p>
               <p className="text-xs text-dark/60">
                 {item.quantity} × {currency.format(item.unitPrice)}
               </p>
