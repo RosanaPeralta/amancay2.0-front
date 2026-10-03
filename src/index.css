@@ -10,11 +10,12 @@
   --color-info-pink: #c5309b; /* pink */
   --color-info: #f7e45d; /* discount yellow */
   --color-danger: #b61e0a; /* red */
+  --color-mist: #f1f4f1; /* product image / tile backdrop */
   --color-white: #ffffff;
   --color-dark: #333333;
 
   /* Typography */
-  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -30,8 +31,12 @@
 
   body {
     margin: 0;
-    background: var(--color-light);
+    background: var(--color-white);
     color: var(--color-dark);
+  }
+
+  p {
+    margin: 0;
   }
 }
 
@@ -102,8 +107,4 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
-
-p {
-  margin: 0;
 }

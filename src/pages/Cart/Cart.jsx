@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux'
 import Container from '../../components/ui/Container'
-import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import Notice from '../../components/ui/Notice'
 import CartLineItem from '../../components/cart/CartLineItem'
@@ -16,20 +15,20 @@ function Cart() {
   const subtotal = useSelector(selectCartSubtotal)
 
   return (
-    <Container className="py-12">
-      <SectionHeading>Your cart</SectionHeading>
+    <Container className="py-10 text-left">
+      <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight mb-8">Tu carrito</h1>
 
       {items.length === 0 ? (
         <Notice>
-          Your cart is empty.
+          Tu carrito está vacío.
           <div className="mt-4">
             <Button to="/products" variant="outline">
-              Browse products
+              Ver productos
             </Button>
           </div>
         </Notice>
       ) : (
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-3xl space-y-6">
           <ul className="space-y-4">
             {items.map((item) => (
               <CartLineItem key={item.variantId} item={item} />
@@ -43,9 +42,9 @@ function Cart() {
 
           <div className="flex justify-end gap-3">
             <Button to="/products" variant="outline">
-              Continue shopping
+              Seguir comprando
             </Button>
-            <Button to="/checkout">Checkout</Button>
+            <Button to="/checkout">Finalizar compra</Button>
           </div>
         </div>
       )}

@@ -12,7 +12,9 @@ function RequireAdmin() {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
-  if (status === 'idle' || profileStatus === 'idle' || profileStatus === 'loading') {
+  // Only block while we have no profile yet. Supabase re-fires SIGNED_IN (e.g. on tab focus), which
+  // reloads the profile; swapping the whole admin layout for a spinner then would flash everything.
+  if (status === 'idle' || (!profile && (profileStatus === 'idle' || profileStatus === 'loading'))) {
     return (
       <Container className="py-12">
         <Loading />
@@ -20,10 +22,10 @@ function RequireAdmin() {
     )
   }
 
-  if (profileStatus === 'failed') {
+  if (!profile && profileStatus === 'failed') {
     return (
       <Container className="py-12">
-        <Notice variant="error">Couldn't load your profile: {error}</Notice>
+        <Notice variant="error">No se pudo cargar tu perfil: {error}</Notice>
       </Container>
     )
   }

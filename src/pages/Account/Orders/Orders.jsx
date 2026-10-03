@@ -11,7 +11,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 })
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
+const dateFormatter = new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' })
 
 function Orders() {
   const dispatch = useDispatch()
@@ -24,8 +24,8 @@ function Orders() {
   const isLoading = status === 'idle' || status === 'loading'
 
   if (isLoading) return <Loading />
-  if (error) return <Notice variant="error">Couldn't load your orders: {error}</Notice>
-  if (items.length === 0) return <Notice>You haven't placed any orders yet.</Notice>
+  if (error) return <Notice variant="error">No se pudieron cargar tus pedidos: {error}</Notice>
+  if (items.length === 0) return <Notice>Todavía no hiciste ningún pedido.</Notice>
 
   return (
     <ul className="space-y-4">
@@ -33,10 +33,10 @@ function Orders() {
         <li key={order.id}>
           <Link
             to={`/account/orders/${order.id}`}
-            className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-dark/10 bg-white p-5 transition-colors hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dark/5 bg-white p-5 shadow-sm transition-colors hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           >
             <div>
-              <p className="font-medium text-dark">Order #{order.id.slice(0, 8)}</p>
+              <p className="font-medium text-dark">Pedido #{order.id.slice(0, 8)}</p>
               <p className="caption-text">{dateFormatter.format(new Date(order.createdAt))}</p>
             </div>
             <div className="flex items-center gap-4">

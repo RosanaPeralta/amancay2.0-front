@@ -32,19 +32,20 @@ function Login() {
 
   return (
     <AuthCard
-      title="Log in"
+      title="Bienvenido de nuevo"
+      subtitle="Inicia sesión para ver tus favoritos, reseñas y la configuración de tu cuenta."
       footer={
         <>
-          Don't have an account?{' '}
-          <Link to="/register" className="text-primary font-medium hover-primary-light">
-            Sign up
+          ¿No tienes una cuenta?{' '}
+          <Link to="/register" className="font-bold text-primary hover-primary-light">
+            Crear cuenta
           </Link>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
-          label="Email"
+          label="Correo electrónico"
           type="email"
           autoComplete="email"
           required
@@ -52,22 +53,22 @@ function Login() {
           onChange={(event) => setEmail(event.target.value)}
         />
         <Input
-          label="Password"
+          label="Contraseña"
           type="password"
           autoComplete="current-password"
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        {error && <p className="text-sm text-danger">{error}</p>}
-        <Button type="submit" className="w-full" disabled={submitting}>
-          {submitting ? 'Logging in...' : 'Log in'}
-        </Button>
-        <p className="text-center text-sm">
-          <Link to="/forgot-password" className="text-primary hover-primary-light">
-            Forgot your password?
+        <p className="-mt-2 text-right text-sm">
+          <Link to="/forgot-password" className="font-semibold text-secondary hover:underline">
+            ¿Olvidaste tu contraseña?
           </Link>
         </p>
+        {error && <p className="text-sm text-danger">{error}</p>}
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        </Button>
       </form>
     </AuthCard>
   )

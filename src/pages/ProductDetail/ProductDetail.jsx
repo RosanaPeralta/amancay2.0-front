@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button'
 import Notice from '../../components/ui/Notice'
 import Loading from '../../components/Loading/Loading'
 import FavoriteButton from '../../components/FavoriteButton/FavoriteButton'
+import ProductReviews from '../../components/reviews/ProductReviews'
 import { fetchProductById } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
 import { addItem } from '../../store/slices/cartSlice'
@@ -50,10 +51,10 @@ function ProductDetail() {
   if (error) {
     return (
       <Container className="py-12 text-center">
-        <Notice variant="error">Couldn't load this product: {error}</Notice>
+        <Notice variant="error">No se pudo cargar este producto: {error}</Notice>
         <div className="mt-6">
           <Button to="/products" variant="outline">
-            Back to products
+            Volver a productos
           </Button>
         </div>
       </Container>
@@ -92,13 +93,13 @@ function ProductDetail() {
     <Container className="py-12">
       <div className="mb-8">
         <Button to="/products" variant="outline">
-          ← Back to products
+          ← Volver a productos
         </Button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
         <div>
-          <div className="aspect-square bg-light rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="aspect-square bg-mist rounded-lg overflow-hidden flex items-center justify-center">
             {activeImage ? (
               <img
                 src={activeImage.imageUrl}
@@ -106,7 +107,7 @@ function ProductDetail() {
                 className="w-full h-full object-contain"
               />
             ) : (
-              <span className="caption-text">No image</span>
+              <span className="caption-text">Sin imagen</span>
             )}
           </div>
           {images.length > 1 && (
@@ -150,7 +151,7 @@ function ProductDetail() {
 
           <div className="flex flex-col gap-3 border-t border-dark/10 pt-6">
             {(product.variants || []).length === 0 ? (
-              <p className="body-text">No pricing available.</p>
+              <p className="body-text">Precio no disponible.</p>
             ) : (
               product.variants.map((variant) => {
                 const inStock = variant.stockQuantity > 0
@@ -161,7 +162,7 @@ function ProductDetail() {
                         {currencyFormatter.format(variant.price)}
                       </span>
                       <span className={`block text-sm ${inStock ? 'text-dark/60' : 'text-danger'}`}>
-                        {inStock ? `${variant.stockQuantity} in stock` : 'Out of stock'}
+                        {inStock ? `${variant.stockQuantity} en stock` : 'Sin stock'}
                       </span>
                     </div>
                     {inStock && (
@@ -174,7 +175,7 @@ function ProductDetail() {
                           onChange={(event) => handleQuantityChange(variant, event.target.value)}
                           className="w-16 px-3 py-2 rounded-full border border-dark/10 bg-white text-sm text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                         />
-                        <Button onClick={() => handleAddToCart(variant)}>Add to cart</Button>
+                        <Button onClick={() => handleAddToCart(variant)}>Agregar al carrito</Button>
                       </div>
                     )}
                   </div>
@@ -185,12 +186,14 @@ function ProductDetail() {
 
           {product.description && (
             <div className="mt-8">
-              <h2 className="subtitle-primary text-lg text-dark font-semibold mb-2">Description</h2>
+              <h2 className="subtitle-primary text-lg text-dark font-semibold mb-2">Descripción</h2>
               <p className="body-text whitespace-pre-line">{product.description}</p>
             </div>
           )}
         </div>
       </div>
+
+      <ProductReviews key={product.id} productId={product.id} />
     </Container>
   )
 }

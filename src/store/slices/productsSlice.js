@@ -10,7 +10,7 @@ async function hydrateSummaries(summaries) {
 export const fetchFeaturedProducts = createAsyncThunk(
   'products/fetchFeatured',
   async () => {
-    const page = await listProducts({ page: 0, size: 6, isActive: true })
+    const page = await listProducts({ page: 0, size: 8, isActive: true })
     return hydrateSummaries(page.content)
   },
   {
@@ -20,10 +20,10 @@ export const fetchFeaturedProducts = createAsyncThunk(
 
 export const fetchProductsList = createAsyncThunk(
   'products/fetchList',
-  async ({ page = 0, size = 12, q } = {}) => {
-    const data = await listProducts({ page, size, isActive: true, q })
+  async ({ page = 0, size = 12, name, categoryId, sort } = {}) => {
+    const data = await listProducts({ page, size, isActive: true, name, categoryId, sort })
     const items = await hydrateSummaries(data.content)
-    return { items, page: data.page, totalPages: data.totalPages }
+    return { items, page: data.page, totalPages: data.totalPages, totalElements: data.totalElements }
   },
 )
 
@@ -31,7 +31,7 @@ export const fetchProductById = createAsyncThunk('products/fetchById', (id) => g
 
 const initialState = {
   featured: { items: [], status: 'idle', error: null },
-  list: { items: [], page: 0, totalPages: 1, status: 'idle', error: null },
+  list: { items: [], page: 0, totalPages: 1, totalElements: 0, status: 'idle', error: null, requestId: null },
   current: { item: null, status: 'idle', error: null },
 }
 
@@ -54,17 +54,22 @@ const productsSlice = createSlice({
         state.featured.error = action.error.message
       })
 
-      .addCase(fetchProductsList.pending, (state) => {
+      // Filters can fire several requests in a row; only the latest one wins.
+      .addCase(fetchProductsList.pending, (state, action) => {
         state.list.status = 'loading'
         state.list.error = null
+        state.list.requestId = action.meta.requestId
       })
       .addCase(fetchProductsList.fulfilled, (state, action) => {
+        if (state.list.requestId !== action.meta.requestId) return
         state.list.status = 'succeeded'
         state.list.items = action.payload.items
         state.list.page = action.payload.page
         state.list.totalPages = action.payload.totalPages
+        state.list.totalElements = action.payload.totalElements
       })
       .addCase(fetchProductsList.rejected, (state, action) => {
+        if (state.list.requestId !== action.meta.requestId) return
         state.list.status = 'failed'
         state.list.error = action.error.message
       })

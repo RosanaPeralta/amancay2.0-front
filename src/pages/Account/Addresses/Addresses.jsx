@@ -15,7 +15,7 @@ import {
 const MAX_ADDRESSES = 10
 
 function formatAddress(address) {
-  const line = [`${address.street} ${address.number}`, address.floorApt != null && `Floor/Apt ${address.floorApt}`]
+  const line = [`${address.street} ${address.number}`, address.floorApt != null && `Piso/Depto. ${address.floorApt}`]
     .filter(Boolean)
     .join(', ')
   const place = [address.city, address.province, address.country].filter(Boolean).join(', ')
@@ -52,24 +52,24 @@ function Addresses() {
   }
 
   function handleDelete(address) {
-    if (window.confirm('Delete this address?')) run(deleteAddress(address.id))
+    if (window.confirm('¿Eliminar esta dirección?')) run(deleteAddress(address.id))
   }
 
   const isLoading = status === 'idle' || status === 'loading'
   const limitReached = items.length >= MAX_ADDRESSES
 
   if (isLoading) return <Loading />
-  if (error) return <Notice variant="error">Couldn't load your addresses: {error}</Notice>
+  if (error) return <Notice variant="error">No se pudieron cargar tus direcciones: {error}</Notice>
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <p className="body-text-light text-sm">
-          {items.length} of {MAX_ADDRESSES} addresses
+          {items.length} de {MAX_ADDRESSES} direcciones
         </p>
         {editing === null && (
           <Button onClick={() => setEditing('new')} disabled={limitReached}>
-            Add address
+            Agregar dirección
           </Button>
         )}
       </div>
@@ -86,7 +86,7 @@ function Addresses() {
       {actionError && <Notice variant="error">{actionError}</Notice>}
 
       {items.length === 0 ? (
-        editing === null && <Notice>You haven't added any addresses yet.</Notice>
+        editing === null && <Notice>Todavía no agregaste ninguna dirección.</Notice>
       ) : (
         <ul className="space-y-4">
           {items.map((address) => {
@@ -99,7 +99,7 @@ function Addresses() {
                       {line}
                       {address.isDefault && (
                         <span className="ml-2 px-2 py-0.5 rounded-full border border-primary/30 text-primary text-xs font-medium">
-                          Default
+                          Predeterminada
                         </span>
                       )}
                     </p>
@@ -108,14 +108,14 @@ function Addresses() {
                   <div className="flex flex-wrap gap-2 text-sm">
                     {!address.isDefault && (
                       <Button variant="outline" onClick={() => run(setDefaultAddress(address.id))}>
-                        Set as default
+                        Marcar como predeterminada
                       </Button>
                     )}
                     <Button variant="outline" onClick={() => setEditing(address)}>
-                      Edit
+                      Editar
                     </Button>
                     <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/5" onClick={() => handleDelete(address)}>
-                      Delete
+                      Eliminar
                     </Button>
                   </div>
                 </div>

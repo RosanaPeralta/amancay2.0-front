@@ -55,23 +55,23 @@ function AddressForm({ address, onSubmit, onCancel }) {
   return (
     <form onSubmit={handleSubmit} className="rounded-lg border border-dark/10 bg-white p-6 space-y-4">
       <div className="grid sm:grid-cols-[1fr_120px_120px] gap-4">
-        <Input label="Street" required maxLength={255} value={values.street} onChange={set('street')} error={fieldErrors.street} />
-        <Input label="Number" type="number" min={1} required value={values.number} onChange={set('number')} error={fieldErrors.number} />
-        <Input label="Floor / Apt" type="number" min={0} value={values.floorApt} onChange={set('floorApt')} error={fieldErrors.floorApt} />
+        <Input label="Calle" required maxLength={255} value={values.street} onChange={set('street')} error={fieldErrors.street} />
+        <Input label="Número" type="number" min={1} required value={values.number} onChange={set('number')} error={fieldErrors.number} />
+        <Input label="Piso / Depto." type="number" min={0} value={values.floorApt} onChange={set('floorApt')} error={fieldErrors.floorApt} />
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
-        <Input label="City" required maxLength={120} value={values.city} onChange={set('city')} error={fieldErrors.city} />
-        <Input label="Province" maxLength={120} value={values.province} onChange={set('province')} error={fieldErrors.province} />
-        <Input label="Country" required maxLength={120} value={values.country} onChange={set('country')} error={fieldErrors.country} />
-        <Input label="Postal code" maxLength={20} value={values.postalCode} onChange={set('postalCode')} error={fieldErrors.postalCode} />
+        <Input label="Ciudad" required maxLength={120} value={values.city} onChange={set('city')} error={fieldErrors.city} />
+        <Input label="Provincia" maxLength={120} value={values.province} onChange={set('province')} error={fieldErrors.province} />
+        <Input label="País" required maxLength={120} value={values.country} onChange={set('country')} error={fieldErrors.country} />
+        <Input label="Código postal" maxLength={20} value={values.postalCode} onChange={set('postalCode')} error={fieldErrors.postalCode} />
       </div>
       {error && <p className="text-sm text-danger">{error}</p>}
       <div className="flex gap-3">
         <Button type="submit" disabled={submitting}>
-          {submitting ? 'Saving...' : address ? 'Save changes' : 'Add address'}
+          {submitting ? 'Guardando...' : address ? 'Guardar cambios' : 'Agregar dirección'}
         </Button>
         <Button variant="outline" onClick={onCancel} disabled={submitting}>
-          Cancel
+          Cancelar
         </Button>
       </div>
     </form>

@@ -26,15 +26,15 @@ function TransferReferenceForm({ initialValue, onSubmit }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <Input
-        label="Transfer reference"
+        label="Referencia de la transferencia"
         required
-        placeholder="Transaction ID from your bank"
+        placeholder="Número de operación de tu banco"
         value={value}
         onChange={(event) => setValue(event.target.value)}
       />
       {error && <p className="text-sm text-danger">{error}</p>}
       <Button type="submit" disabled={submitting}>
-        {submitting ? 'Saving...' : initialValue ? 'Update reference' : 'Submit reference'}
+        {submitting ? 'Guardando...' : initialValue ? 'Actualizar referencia' : 'Enviar referencia'}
       </Button>
     </form>
   )

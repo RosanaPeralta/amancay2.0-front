@@ -13,10 +13,23 @@ const styles = {
   RECHAZADO: 'border-danger/30 text-danger',
 }
 
+const labels = {
+  PUBLISHED: 'Publicada',
+  HIDDEN: 'Oculta',
+  CREADO: 'Creado',
+  EN_PREPARACION: 'En preparación',
+  DESPACHADO: 'Despachado',
+  ENTREGADO: 'Entregado',
+  DEVUELTO: 'Devuelto',
+  PENDIENTE: 'Pendiente',
+  APROBADO: 'Aprobado',
+  RECHAZADO: 'Rechazado',
+}
+
 function StatusBadge({ status }) {
   return (
     <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${styles[status] || styles.HIDDEN}`}>
-      {status}
+      {labels[status] || status}
     </span>
   )
 }

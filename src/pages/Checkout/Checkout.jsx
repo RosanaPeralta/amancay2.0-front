@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Container from '../../components/ui/Container'
-import SectionHeading from '../../components/ui/SectionHeading'
+import Panel from '../../components/ui/Panel'
 import Button from '../../components/ui/Button'
 import Notice from '../../components/ui/Notice'
 import Loading from '../../components/Loading/Loading'
@@ -70,10 +70,10 @@ function Checkout() {
     return (
       <Container className="py-12 text-center">
         <Notice>
-          Your cart is empty.
+          Tu carrito está vacío.
           <div className="mt-4">
             <Button to="/products" variant="outline">
-              Browse products
+              Ver productos
             </Button>
           </div>
         </Notice>
@@ -83,46 +83,46 @@ function Checkout() {
 
   if (order) {
     return (
-      <Container className="py-12">
-        <SectionHeading>Order placed</SectionHeading>
+      <Container className="py-10">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight mb-8 text-center">Pedido realizado</h1>
         <div className="max-w-md mx-auto space-y-6">
-          <div className="rounded-lg border border-dark/10 bg-white p-6 space-y-1 text-center">
-            <p className="text-sm text-dark/60">Order #{order.id}</p>
+          <div className="rounded-2xl border border-dark/5 bg-white p-6 shadow-sm space-y-1 text-center">
+            <p className="text-sm text-dark/60">Pedido #{order.id.slice(0, 8)}</p>
             <p className="text-2xl font-semibold text-primary">{currencyFormatter.format(order.total)}</p>
           </div>
 
           {attemptingPayment && <Loading />}
 
           {!attemptingPayment && payment?.status === 'APROBADO' && (
-            <Notice>Payment approved. Your order is now being prepared.</Notice>
+            <Notice>Pago aprobado. Ya estamos preparando tu pedido.</Notice>
           )}
 
           {!attemptingPayment && payment?.status === 'PENDIENTE' && (
             <>
-              <Notice>Payment pending confirmation (bank transfer).</Notice>
+              <Notice>Pago pendiente de confirmación (transferencia bancaria).</Notice>
               <div className="text-center">
-                <Button to={`/account/orders/${order.id}`}>Go to order to submit your transfer reference</Button>
+                <Button to={`/account/orders/${order.id}`}>Ir al pedido para cargar la referencia de la transferencia</Button>
               </div>
             </>
           )}
 
           {!attemptingPayment && payment?.status === 'RECHAZADO' && (
             <>
-              <Notice variant="error">Payment declined{payment.reason ? `: ${payment.reason}` : '.'}</Notice>
-              <PaymentMethodForm onSubmit={handleRetryPayment} submitLabel="Retry payment" />
+              <Notice variant="error">Pago rechazado{payment.reason ? `: ${payment.reason}` : '.'}</Notice>
+              <PaymentMethodForm onSubmit={handleRetryPayment} submitLabel="Reintentar pago" />
             </>
           )}
 
           {!attemptingPayment && !payment && (
             <>
-              <Notice variant="error">We couldn't process the payment. You can try again below.</Notice>
-              <PaymentMethodForm onSubmit={handleRetryPayment} submitLabel="Try payment again" />
+              <Notice variant="error">No pudimos procesar el pago. Puedes intentarlo de nuevo abajo.</Notice>
+              <PaymentMethodForm onSubmit={handleRetryPayment} submitLabel="Intentar pagar de nuevo" />
             </>
           )}
 
           <div className="text-center">
             <Button to="/products" variant="outline">
-              Continue shopping
+              Seguir comprando
             </Button>
           </div>
         </div>
@@ -131,21 +131,20 @@ function Checkout() {
   }
 
   return (
-    <Container className="py-12">
-      <SectionHeading>Checkout</SectionHeading>
+    <Container className="py-10 text-left">
+      <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight mb-8">Finalizar compra</h1>
 
-      <div className="grid md:grid-cols-[1fr_320px] gap-10 max-w-4xl mx-auto items-start">
-        <div className="space-y-8">
-          <div>
-            <h2 className="subtitle-primary text-lg text-dark font-semibold mb-4">Shipping address</h2>
+      <div className="grid md:grid-cols-[1fr_340px] gap-8 items-start">
+        <div className="space-y-6">
+          <Panel title="Dirección de envío">
             {addressesStatus === 'idle' || addressesStatus === 'loading' ? (
               <Loading />
             ) : addresses.length === 0 ? (
               <Notice>
-                You don't have any saved addresses yet.
+                Todavía no tienes direcciones guardadas.
                 <div className="mt-4">
                   <Button to="/account/addresses" variant="outline">
-                    Add an address
+                    Agregar una dirección
                   </Button>
                 </div>
               </Notice>
@@ -154,14 +153,14 @@ function Checkout() {
                 {addresses.map((address) => (
                   <label
                     key={address.id}
-                    className={`flex items-start gap-3 rounded-lg border p-4 cursor-pointer ${
-                      selectedAddressId === address.id ? 'border-primary' : 'border-dark/10'
+                    className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${
+                      selectedAddressId === address.id ? 'border-primary bg-primary/5' : 'border-dark/10 hover:border-primary/30'
                     }`}
                   >
                     <input
                       type="radio"
                       name="address"
-                      className="mt-1"
+                      className="mt-1 accent-primary"
                       checked={selectedAddressId === address.id}
                       onChange={() => setSelectedAddressId(address.id)}
                     />
@@ -177,22 +176,20 @@ function Checkout() {
                 ))}
               </div>
             )}
-          </div>
+          </Panel>
 
           {addresses.length > 0 && (
-            <div>
-              <h2 className="subtitle-primary text-lg text-dark font-semibold mb-4">Payment</h2>
+            <Panel title="Pago">
               <PaymentMethodForm
                 onSubmit={handlePlaceOrder}
-                submitLabel="Place order"
+                submitLabel="Confirmar pedido"
                 disabled={!selectedAddressId}
               />
-            </div>
+            </Panel>
           )}
         </div>
 
-        <div className="rounded-lg border border-dark/10 bg-white p-6 space-y-4">
-          <h2 className="subtitle-primary text-lg text-dark font-semibold">Order summary</h2>
+        <Panel title="Resumen del pedido" className="md:sticky md:top-24">
           <ul className="space-y-2 text-sm">
             {items.map((item) => (
               <li key={item.variantId} className="flex justify-between gap-2">
@@ -203,11 +200,11 @@ function Checkout() {
               </li>
             ))}
           </ul>
-          <div className="flex justify-between border-t border-dark/10 pt-4 font-semibold text-dark">
+          <div className="mt-4 flex justify-between border-t border-dark/10 pt-4 font-semibold text-dark">
             <span>Total</span>
             <span>{currencyFormatter.format(subtotal)}</span>
           </div>
-        </div>
+        </Panel>
       </div>
     </Container>
   )

@@ -29,24 +29,22 @@ function ForgotPassword() {
 
   return (
     <AuthCard
-      title="Reset password"
+      title="Restablecer contraseña"
+      subtitle="Ingresa tu correo y te enviaremos un enlace para elegir una nueva contraseña."
       footer={
-        <Link to="/login" className="text-primary font-medium hover-primary-light">
-          Back to log in
+        <Link to="/login" className="font-bold text-primary hover-primary-light">
+          Volver a iniciar sesión
         </Link>
       }
     >
       {sent ? (
         <Notice>
-          If an account exists for <strong>{email}</strong>, we sent a link to reset your password.
+          Si existe una cuenta para <strong>{email}</strong>, te enviamos un enlace para restablecer tu contraseña.
         </Notice>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
-          <p className="body-text-light text-sm">
-            Enter your email and we'll send you a link to choose a new password.
-          </p>
           <Input
-            label="Email"
+            label="Correo electrónico"
             type="email"
             autoComplete="email"
             required
@@ -55,7 +53,7 @@ function ForgotPassword() {
           />
           {error && <p className="text-sm text-danger">{error}</p>}
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? 'Sending...' : 'Send reset link'}
+            {submitting ? 'Enviando...' : 'Enviar enlace'}
           </Button>
         </form>
       )}

@@ -12,12 +12,12 @@ function CartLineItem({ item }) {
   const dispatch = useDispatch()
 
   return (
-    <li className="flex flex-wrap items-center gap-4 rounded-lg border border-dark/10 bg-white p-5">
-      <div className="h-16 w-16 shrink-0 rounded-md bg-light overflow-hidden flex items-center justify-center">
+    <li className="flex flex-wrap items-center gap-4 rounded-2xl border border-dark/5 bg-white p-5 shadow-sm">
+      <div className="h-16 w-16 shrink-0 rounded-xl bg-mist overflow-hidden flex items-center justify-center">
         {item.imageUrl ? (
           <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-contain" />
         ) : (
-          <span className="caption-text">No image</span>
+          <span className="caption-text">Sin imagen</span>
         )}
       </div>
 
@@ -28,13 +28,14 @@ function CartLineItem({ item }) {
         >
           {item.productName}
         </Link>
-        <p className="text-dark text-sm">{currencyFormatter.format(item.unitPrice)} each</p>
+        <p className="text-dark text-sm">{currencyFormatter.format(item.unitPrice)} c/u</p>
       </div>
 
       <input
         type="number"
         min={1}
         max={item.maxStock}
+        aria-label="Cantidad"
         value={item.quantity}
         onChange={(event) =>
           dispatch(updateQuantity({ variantId: item.variantId, quantity: Number(event.target.value) || 1 }))
@@ -51,7 +52,7 @@ function CartLineItem({ item }) {
         className="text-danger border-danger/30 hover:bg-danger/5"
         onClick={() => dispatch(removeItem(item.variantId))}
       >
-        Remove
+        Quitar
       </Button>
     </li>
   )
