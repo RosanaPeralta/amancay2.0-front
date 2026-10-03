@@ -43,7 +43,6 @@ function CategoryTile({ category, imageUrl }) {
 const CATEGORY_TILE_LIMIT = 7
 
 function CategoryGrid({ categories, products }) {
-  // Use a loaded product photo for each category when we have one; otherwise fall back to an icon.
   const imageFor = (categoryId) =>
     products.find((product) => product.categoryIds?.includes(categoryId) && product.images?.length)?.images[0].imageUrl
 

@@ -34,7 +34,6 @@ function Orders() {
   const selected = orders.find((order) => order.id === selectedId) ?? visible[0]
   const toShip = orders.filter((order) => order.status === 'EN_PREPARACION').length
 
-  // Keep showing the current rows while a refetch runs; only the first load shows a spinner.
   const isLoading = status === 'idle' || (status === 'loading' && orders.length === 0)
 
   return (

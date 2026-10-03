@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// The cart lives entirely in this browser: it's not tied to the logged-in user and the
-// backend never sees it until checkout turns it into a real order.
+// Local-only cart; the backend first sees it at checkout.
 const STORAGE_KEY = 'amancay:cart'
 
 function loadInitialItems() {

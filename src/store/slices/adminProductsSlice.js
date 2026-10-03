@@ -3,10 +3,7 @@ import * as productsService from '../../services/productsService'
 import { mutationThunk } from '../mutationThunk'
 import { sessionChanged, signOut } from './authSlice'
 
-// Admin needs price, stock and categories for every product (active or not), so load the
-// catalog once with details and filter it client-side. Fine for a catalog of this size.
-// Loaded once per session and kept up to date by the mutations below, so switching admin tabs
-// doesn't refetch every product.
+// Full catalog with details, loaded once and filtered client-side.
 export const fetchAdminProducts = createAsyncThunk(
   'adminProducts/fetchAll',
   async () => {

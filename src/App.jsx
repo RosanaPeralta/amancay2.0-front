@@ -57,7 +57,6 @@ function App() {
           </Route>
         </Route>
 
-        {/* Admin has its own chrome (top nav, no store navbar/footer). */}
         <Route element={<RequireAdmin />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/products" replace />} />

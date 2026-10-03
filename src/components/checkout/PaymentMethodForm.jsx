@@ -52,9 +52,6 @@ function validateCard(card) {
   return errors
 }
 
-// Shared by the checkout page (first payment attempt) and, later, the order
-// detail page (retrying a rejected one): both just need method + card and a
-// place to call the API, so the submit itself is the caller's job via onSubmit.
 function PaymentMethodForm({ onSubmit, submitLabel = 'Pagar', disabled = false }) {
   const [method, setMethod] = useState('TARJETA_CREDITO')
   const [card, setCard] = useState(EMPTY_CARD)

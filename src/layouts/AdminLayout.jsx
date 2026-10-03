@@ -41,8 +41,6 @@ function AdminLayout() {
             <UserMenu />
           </div>
         </div>
-        {/* Seven sections plus the user menu don't fit in one row inside max-w-7xl,
-            so the links always get their own row (wrapping on narrow screens). */}
         <nav className={`${WIDTH} flex flex-wrap gap-1 pb-3`} aria-label="Administración">
           {links.map((link) => (
             <NavLink key={link.to} to={link.to} className={linkClass}>

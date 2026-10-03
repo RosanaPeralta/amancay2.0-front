@@ -2,9 +2,7 @@ import { useState } from 'react'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 
-// Only for a PENDIENTE transfer payment: the buyer submits (or updates, if they made a
-// typo) the reference code so the admin has something to check against their bank
-// account before confirming. Doesn't touch stock or the order's status on its own.
+// Reference code for a pending transfer; the admin checks it before confirming.
 function TransferReferenceForm({ initialValue, onSubmit }) {
   const [value, setValue] = useState(initialValue ?? '')
   const [error, setError] = useState(null)

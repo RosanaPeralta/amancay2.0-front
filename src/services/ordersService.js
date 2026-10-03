@@ -12,7 +12,7 @@ export function createOrder(data) {
   return httpClient.post('/orders', data)
 }
 
-// Admin-only on the backend: every user's orders, newest first, with the buyer's email.
+// Admin only.
 export function listAllOrders() {
   return httpClient.get('/admin/orders')
 }

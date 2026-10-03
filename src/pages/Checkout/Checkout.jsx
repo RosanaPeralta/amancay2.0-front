@@ -31,17 +31,12 @@ function Checkout() {
     dispatch(fetchAddresses())
   }, [dispatch])
 
-  // Pick a default address as soon as the list loads, the same way ProductDetail
-  // resets its own state during render instead of in an effect.
   if (!selectedAddressId && addresses.length > 0) {
     const defaultAddress = addresses.find((address) => address.isDefault) ?? addresses[0]
     setSelectedAddressId(defaultAddress.id)
   }
 
-  // Runs as the checkout form's onSubmit: only throws (letting the form show the
-  // error) while the order itself hasn't been created yet. Once it exists the
-  // cart is cleared and the view switches to the order screen no matter what
-  // happens with this first payment attempt.
+  // Once the order exists the cart is cleared, even if the payment fails.
   async function handlePlaceOrder({ method, card }) {
     const createdOrder = await createOrder({
       shippingAddressId: selectedAddressId,
@@ -57,8 +52,6 @@ function Checkout() {
     }
   }
 
-  // Reused for "the first attempt blew up before creating a Payment" (no payment
-  // yet) and for "it was rejected, try again" (retryPayment on that same payment).
   async function handleRetryPayment({ method, card }) {
     const result = payment
       ? await retryPayment(payment.id, { method, card })

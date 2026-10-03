@@ -16,8 +16,7 @@ export function attachTransferReference(paymentId, transferReference) {
   return httpClient.patch(`/payments/${paymentId}/transfer-reference`, { transferReference })
 }
 
-// Admin-only on the backend: lists pending payments (transfers awaiting a decision)
-// across every user, not just the caller's own orders.
+// Admin only.
 export function listPendingPayments() {
   return httpClient.get('/admin/payments/pending')
 }

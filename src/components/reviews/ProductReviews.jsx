@@ -24,8 +24,7 @@ function ProductReviews({ productId }) {
 
   const [page, setPage] = useState(0)
   const [reloadCount, setReloadCount] = useState(0)
-  // Each response is tagged with the request it answers, so "loading" is just
-  // "the latest result is for an older request" and the effect never sets state synchronously.
+  // Loading = the last result belongs to an older request.
   const requestKey = `${page}:${reloadCount}`
   const [result, setResult] = useState({ key: null, reviews: [], totalPages: 1, summary: null, error: null })
   const [writing, setWriting] = useState(false)

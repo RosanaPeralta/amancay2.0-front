@@ -1,4 +1,3 @@
-// Shared admin classes so every list and form looks the same.
 export const tableWrapClass = 'overflow-x-auto rounded-2xl border border-dark/5 bg-white shadow-sm'
 export const thClass = 'px-4 py-3 text-left text-[0.65rem] font-bold uppercase tracking-wider text-dark/50 whitespace-nowrap'
 export const tdClass = 'px-4 py-3 align-middle'

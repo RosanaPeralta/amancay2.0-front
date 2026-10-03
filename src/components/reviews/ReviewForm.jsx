@@ -2,8 +2,6 @@ import { useState } from 'react'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 
-// Used both to edit an existing review (My reviews) and to write a new one
-// (product page); without a review it starts empty.
 function ReviewForm({
   review = {},
   onSubmit,

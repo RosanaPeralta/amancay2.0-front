@@ -12,8 +12,7 @@ function RequireAdmin() {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
-  // Only block while we have no profile yet. Supabase re-fires SIGNED_IN (e.g. on tab focus), which
-  // reloads the profile; swapping the whole admin layout for a spinner then would flash everything.
+  // Supabase re-fires SIGNED_IN on tab focus; don't flash a spinner on those profile reloads.
   if (status === 'idle' || (!profile && (profileStatus === 'idle' || profileStatus === 'loading'))) {
     return (
       <Container className="py-12">

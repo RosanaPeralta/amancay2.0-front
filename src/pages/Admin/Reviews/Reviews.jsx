@@ -45,7 +45,6 @@ function Reviews() {
     if (window.confirm('¿Eliminar esta reseña de forma permanente?')) run(deleteAdminReview(review.id))
   }
 
-  // Keep showing the current rows while a refetch runs; only the first load shows a spinner.
   const isLoading = status === 'idle' || (status === 'loading' && items.length === 0)
 
   return (

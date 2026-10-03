@@ -43,7 +43,6 @@ function Users() {
     }
   }
 
-  // Keep showing the current rows while a refetch runs; only the first load shows a spinner.
   const isLoading = status === 'idle' || (status === 'loading' && items.length === 0)
 
   return (

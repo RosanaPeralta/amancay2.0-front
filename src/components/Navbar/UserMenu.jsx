@@ -41,7 +41,6 @@ function UserMenu() {
 
   const username = profile?.name || supabaseUser?.email?.split('@')[0]
 
-  // Close the menu after navigating.
   if (location.pathname !== prevPath) {
     setPrevPath(location.pathname)
     setOpen(false)

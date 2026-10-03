@@ -9,9 +9,8 @@ export const fetchFavoritesPage = createAsyncThunk('favorites/fetchPage', async 
   return { items: data.content, page: data.page, totalPages: data.totalPages }
 })
 
-// Optimistic: `pending` applies the wanted state right away and `rejected` reverts it.
-// The caller passes the target state because `pending` runs before this function does.
-// A 409/404 means the server already agrees with the new state, so it's not an error.
+// Optimistic: `pending` applies the target state and `rejected` reverts it.
+// 409/404 means the server already matches, so it's not an error.
 export const toggleFavorite = createAsyncThunk(
   'favorites/toggle',
   async ({ productId, favorite }) => {

@@ -6,9 +6,7 @@ export const fetchCategories = createAsyncThunk(
   'categories/fetchAll',
   () => categoriesService.listCategories(),
   {
-    // Categories rarely change and are needed on several screens (Home,
-    // ProductDetail) — skip re-fetching once we already have them or a
-    // fetch is already in flight.
+    // Categories rarely change: fetch them once.
     condition: (_, { getState }) => {
       const { status } = getState().categories
       return status !== 'loading' && status !== 'succeeded'
