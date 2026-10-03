@@ -7,7 +7,7 @@ import AdminPageHeader from '../../../components/admin/AdminPageHeader'
 import { changeUserRole, fetchAdminUsers } from '../../../store/slices/adminUsersSlice'
 
 const ROLES = ['BUYER', 'ADMIN']
-const ROLE_LABELS = { BUYER: 'Comprador', ADMIN: 'Admin' }
+const ROLE_LABELS = { BUYER: 'Comprador', ADMIN: 'Administrador' }
 
 function Users() {
   const dispatch = useDispatch()

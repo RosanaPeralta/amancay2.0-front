@@ -1,23 +1,46 @@
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import AdminCard from '../../../components/admin/AdminCard'
-import { inputClass } from '../../../components/admin/styles'
 import Button from '../../../components/ui/Button'
+import { changeOrderStatus } from '../../../store/slices/adminOrdersSlice'
 import OrderStatusPill from './OrderStatusPill'
-import { ORDER_STATUSES, orderTotal, statusLabel } from './sampleOrders'
+import { NEXT_STATUS, shortId, statusLabel } from './orderStatus'
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es-AR', { month: 'short', day: 'numeric' })
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
-function OrderDetail({ order, onStatusChange }) {
-  const [status, setStatus] = useState(order.status)
+function OrderDetail({ order }) {
+  const dispatch = useDispatch()
+  const products = useSelector((state) => state.adminProducts.items)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+
+  const nextStatus = NEXT_STATUS[order.status]
+
+  function productName(variantId) {
+    const product = products.find((item) => item.variants?.some((variant) => variant.id === variantId))
+    return product?.name ?? `Variante #${shortId(variantId)}`
+  }
+
+  async function handleAdvance() {
+    setError(null)
+    setSaving(true)
+    try {
+      await dispatch(changeOrderStatus({ id: order.id, status: nextStatus })).unwrap()
+    } catch (err) {
+      setError(err.message)
+      setSaving(false)
+    }
+  }
 
   return (
     <AdminCard>
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-bold text-primary">Pedido #{order.id}</h2>
-          <p className="text-xs text-dark/60">
-            {formatDate(order.date)} · {order.email}
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-primary">Pedido #{shortId(order.id)}</h2>
+          <p className="truncate text-xs text-dark/60">
+            {formatDate(order.createdAt)} · {order.buyerEmail || 'Comprador desconocido'}
           </p>
         </div>
         <OrderStatusPill status={order.status} />
@@ -25,40 +48,49 @@ function OrderDetail({ order, onStatusChange }) {
 
       <ul className="mt-5 space-y-3">
         {order.items.map((item) => (
-          <li key={item.name} className="flex items-start justify-between gap-3 text-sm">
+          <li key={item.id} className="flex items-start justify-between gap-3 text-sm">
             <div className="min-w-0">
-              <p className="font-bold text-dark">{item.name}</p>
+              <p className="font-bold text-dark">{productName(item.productVariantId)}</p>
               <p className="text-xs text-dark/60">
-                {item.quantity} × {currency.format(item.price)}
+                {item.quantity} × {currency.format(item.unitPrice)}
               </p>
             </div>
-            <span className="shrink-0 font-bold text-dark">{currency.format(item.price * item.quantity)}</span>
+            <span className="shrink-0 font-bold text-dark">{currency.format(item.subtotal)}</span>
           </li>
         ))}
       </ul>
 
-      <div className="mt-5 flex items-center justify-between border-t border-dark/10 pt-4">
-        <span className="text-sm font-bold text-dark">Total</span>
-        <span className="text-2xl font-bold text-primary">{currency.format(orderTotal(order))}</span>
+      <div className="mt-5 space-y-1 border-t border-dark/10 pt-4 text-sm text-dark">
+        <div className="flex justify-between">
+          <span>Subtotal</span>
+          <span>{currency.format(order.subtotal)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Envío</span>
+          <span>{currency.format(order.shippingCost)}</span>
+        </div>
+        <div className="flex items-center justify-between pt-1">
+          <span className="font-bold">Total</span>
+          <span className="text-2xl font-bold text-primary">{currency.format(order.total)}</span>
+        </div>
       </div>
 
       <div className="mt-5">
-        <label htmlFor="order-status" className="mb-1.5 block text-xs font-bold text-dark">
-          Actualizar estado
-        </label>
-        <div className="flex gap-2">
-          <select id="order-status" className={`${inputClass(false)} cursor-pointer`} value={status} onChange={(event) => setStatus(event.target.value)}>
-            {ORDER_STATUSES.map((value) => (
-              <option key={value} value={value}>
-                {statusLabel(value)}
-              </option>
-            ))}
-          </select>
-          <Button onClick={() => onStatusChange(order.id, status)} disabled={status === order.status}>
-            Actualizar
-          </Button>
-        </div>
-        <p className="mt-2 text-xs text-dark/50">Cancelar un pedido debería devolver sus artículos al stock.</p>
+        {nextStatus ? (
+          <>
+            <Button className="w-full" onClick={handleAdvance} disabled={saving}>
+              {saving ? 'Actualizando...' : `Marcar como ${statusLabel(nextStatus).toLowerCase()}`}
+            </Button>
+            {order.status === 'CREADO' && (
+              <p className="mt-2 text-xs text-dark/50">
+                Pasa a preparación sola cuando se aprueba el pago. Avánzalo a mano solo si ya lo cobraste por otro medio.
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="text-xs text-dark/50">Este pedido ya no admite más cambios de estado.</p>
+        )}
+        {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       </div>
     </AdminCard>
   )

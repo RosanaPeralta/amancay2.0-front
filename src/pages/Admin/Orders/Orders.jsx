@@ -1,121 +1,127 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Notice from '../../../components/ui/Notice'
+import Loading from '../../../components/Loading/Loading'
 import AdminPageHeader from '../../../components/admin/AdminPageHeader'
 import FilterChips from '../../../components/admin/FilterChips'
 import SearchField from '../../../components/admin/SearchField'
 import { rowClass, tableWrapClass, tdClass, thClass } from '../../../components/admin/styles'
+import { fetchAdminOrders } from '../../../store/slices/adminOrdersSlice'
+import { fetchAdminProducts } from '../../../store/slices/adminProductsSlice'
 import OrderStatusPill from './OrderStatusPill'
 import OrderDetail from './OrderDetail'
-import { ORDER_STATUSES, orderTotal, sampleOrders, statusLabel } from './sampleOrders'
+import { ORDER_STATUSES, itemCount, shortId, statusLabel } from './orderStatus'
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-const formatDate = (date) => new Date(`${date}T12:00:00`).toLocaleDateString('es-AR', { month: 'short', day: 'numeric' })
-
-function PreviewBanner() {
-  return (
-    <div className="mb-5 flex items-start gap-3 rounded-2xl border border-info bg-info/25 px-4 py-3 text-left text-sm text-dark">
-      <span className="mt-0.5 rounded-full bg-info px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider">Vista previa</span>
-      <p>
-        Un compañero está desarrollando los pedidos. Esta pantalla muestra <strong>datos de ejemplo</strong> y los cambios de
-        estado todavía no se guardan.
-      </p>
-    </div>
-  )
-}
+const formatDate = (date) => new Date(date).toLocaleDateString('es-AR', { month: 'short', day: 'numeric' })
 
 function Orders() {
-  // Local copy so "Update" visibly works in the preview.
-  const [orders, setOrders] = useState(sampleOrders)
+  const dispatch = useDispatch()
+  const { items: orders, status, error } = useSelector((state) => state.adminOrders)
   const [filter, setFilter] = useState('ALL')
   const [search, setSearch] = useState('')
-  const [selectedId, setSelectedId] = useState(orders[0].id)
+  const [selectedId, setSelectedId] = useState(null)
+
+  useEffect(() => {
+    dispatch(fetchAdminOrders())
+    // Order items only carry a variant id; the admin catalog resolves product names.
+    dispatch(fetchAdminProducts())
+  }, [dispatch])
 
   const query = search.trim().toLowerCase().replace('#', '')
   const visible = orders.filter(
     (order) =>
       (filter === 'ALL' || order.status === filter) &&
-      (!query || String(order.id).includes(query) || order.email.toLowerCase().includes(query)),
+      (!query || order.id.toLowerCase().includes(query) || order.buyerEmail?.toLowerCase().includes(query)),
   )
-  const selected = orders.find((order) => order.id === selectedId)
-  const waiting = orders.filter((order) => order.status === 'PAID' || order.status === 'PENDING').length
+  const selected = orders.find((order) => order.id === selectedId) ?? visible[0]
+  const toShip = orders.filter((order) => order.status === 'EN_PREPARACION').length
 
-  function handleStatusChange(id, status) {
-    setOrders((current) => current.map((order) => (order.id === id ? { ...order, status } : order)))
-  }
+  // Keep showing the current rows while a refetch runs; only the first load shows a spinner.
+  const isLoading = status === 'idle' || (status === 'loading' && orders.length === 0)
 
   return (
     <>
       <AdminPageHeader
         title="Pedidos"
-        subtitle={`${orders.length} pedidos recientes · ${waiting} pendientes de envío`}
+        subtitle={`${orders.length} pedidos · ${toShip} para despachar`}
         actions={<SearchField value={search} onChange={setSearch} placeholder="Número de pedido o correo" />}
       />
-      <PreviewBanner />
 
-      <div className="mb-4">
-        <FilterChips
-          label="Filtrar por estado"
-          value={filter}
-          onChange={setFilter}
-          options={[
-            { value: 'ALL', label: 'Todos', count: orders.length },
-            ...ORDER_STATUSES.map((status) => ({
-              value: status,
-              label: statusLabel(status),
-              count: orders.filter((order) => order.status === status).length,
-            })),
-          ]}
-        />
-      </div>
-
-      <div className="grid items-start gap-5 lg:grid-cols-[1fr_340px]">
-        {visible.length === 0 ? (
-          <Notice>Ningún pedido coincide con estos filtros.</Notice>
-        ) : (
-          <div className={tableWrapClass}>
-            <table className="w-full min-w-[560px] text-sm">
-              <thead>
-                <tr>
-                  <th className={thClass}>Pedido</th>
-                  <th className={thClass}>Fecha</th>
-                  <th className={thClass}>Cliente</th>
-                  <th className={thClass}>Artículos</th>
-                  <th className={thClass}>Total</th>
-                  <th className={thClass}>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((order) => (
-                  <tr
-                    key={order.id}
-                    className={`${rowClass(order.id === selectedId)} cursor-pointer`}
-                    onClick={() => setSelectedId(order.id)}
-                  >
-                    <td className={tdClass}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedId(order.id)}
-                        className="font-bold text-dark hover:text-primary focus-visible:outline-none focus-visible:underline"
-                      >
-                        #{order.id}
-                      </button>
-                    </td>
-                    <td className={`${tdClass} text-dark/70`}>{formatDate(order.date)}</td>
-                    <td className={`${tdClass} text-dark/80`}>{order.email}</td>
-                    <td className={`${tdClass} text-dark/80`}>{order.items.reduce((sum, item) => sum + item.quantity, 0)}</td>
-                    <td className={`${tdClass} font-bold text-dark`}>{currency.format(orderTotal(order))}</td>
-                    <td className={tdClass}>
-                      <OrderStatusPill status={order.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {isLoading ? (
+        <Loading />
+      ) : error ? (
+        <Notice variant="error">No se pudieron cargar los pedidos: {error}</Notice>
+      ) : orders.length === 0 ? (
+        <Notice>Todavía no hay pedidos.</Notice>
+      ) : (
+        <>
+          <div className="mb-4">
+            <FilterChips
+              label="Filtrar por estado"
+              value={filter}
+              onChange={setFilter}
+              options={[
+                { value: 'ALL', label: 'Todos', count: orders.length },
+                ...ORDER_STATUSES.map((value) => ({
+                  value,
+                  label: statusLabel(value),
+                  count: orders.filter((order) => order.status === value).length,
+                })),
+              ]}
+            />
           </div>
-        )}
 
-        {selected && <OrderDetail key={`${selected.id}-${selected.status}`} order={selected} onStatusChange={handleStatusChange} />}
-      </div>
+          <div className="grid items-start gap-5 lg:grid-cols-[1fr_340px]">
+            {visible.length === 0 ? (
+              <Notice>Ningún pedido coincide con estos filtros.</Notice>
+            ) : (
+              <div className={tableWrapClass}>
+                <table className="w-full min-w-[560px] text-sm">
+                  <thead>
+                    <tr>
+                      <th className={thClass}>Pedido</th>
+                      <th className={thClass}>Fecha</th>
+                      <th className={thClass}>Cliente</th>
+                      <th className={thClass}>Artículos</th>
+                      <th className={thClass}>Total</th>
+                      <th className={thClass}>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((order) => (
+                      <tr
+                        key={order.id}
+                        className={`${rowClass(order.id === selected?.id)} cursor-pointer`}
+                        onClick={() => setSelectedId(order.id)}
+                      >
+                        <td className={tdClass}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedId(order.id)}
+                            className="font-bold text-dark hover:text-primary focus-visible:outline-none focus-visible:underline"
+                          >
+                            #{shortId(order.id)}
+                          </button>
+                        </td>
+                        <td className={`${tdClass} text-dark/70`}>{formatDate(order.createdAt)}</td>
+                        <td className={`${tdClass} text-dark/80`}>{order.buyerEmail || '—'}</td>
+                        <td className={`${tdClass} text-dark/80`}>{itemCount(order)}</td>
+                        <td className={`${tdClass} font-bold text-dark`}>{currency.format(order.total)}</td>
+                        <td className={tdClass}>
+                          <OrderStatusPill status={order.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {selected && <OrderDetail key={`${selected.id}-${selected.status}`} order={selected} />}
+          </div>
+        </>
+      )}
     </>
   )
 }

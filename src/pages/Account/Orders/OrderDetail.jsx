@@ -137,7 +137,7 @@ function OrderDetail() {
                       <p className="caption-text">{dateFormatter.format(new Date(payment.createdAt))}</p>
                       {payment.reason && <p className="caption-text">{payment.reason}</p>}
                       {payment.transferReference && (
-                        <p className="caption-text">Ref: {payment.transferReference}</p>
+                        <p className="caption-text">Referencia: {payment.transferReference}</p>
                       )}
                     </div>
                     <StatusBadge status={payment.status} />

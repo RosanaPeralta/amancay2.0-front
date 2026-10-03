@@ -3,7 +3,7 @@ import { inputClass } from '../../../../components/admin/styles'
 
 const labelClass = 'text-[0.65rem] font-bold uppercase tracking-wider text-dark/50'
 
-function VariantRow({ variant, index, errors, canRemove, onChange, onRemove }) {
+function VariantRow({ variant, index, errors, onChange }) {
   const priceError = errors[`variants.${index}.price`]
   const stockError = errors[`variants.${index}.stockQuantity`]
 
@@ -32,20 +32,6 @@ function VariantRow({ variant, index, errors, canRemove, onChange, onRemove }) {
         />
         {stockError && <p className="mt-1 text-xs text-danger">{stockError}</p>}
       </div>
-      <p className="hidden truncate rounded-lg bg-mist px-3 py-2 font-mono text-xs text-dark/60 sm:block">
-        {variant.id ?? 'Nueva, se guarda al enviar'}
-      </p>
-      <button
-        type="button"
-        onClick={onRemove}
-        disabled={!canRemove}
-        aria-label={`Quitar variante ${index + 1}`}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-dark/40 hover:bg-danger/10 hover:text-danger disabled:pointer-events-none disabled:opacity-30"
-      >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
-        </svg>
-      </button>
     </div>
   )
 }
@@ -76,7 +62,6 @@ function VariantsSection({ values, errors, setField }) {
       <div className="mb-2 grid grid-cols-[1fr_1fr_auto] gap-3 sm:grid-cols-[1fr_1fr_1.6fr_auto]">
         <span className={labelClass}>Precio (USD)</span>
         <span className={labelClass}>Cantidad en stock</span>
-        <span className={`${labelClass} hidden sm:block`}>ID de variante</span>
         <span className="w-9" />
       </div>
       <div className="space-y-3">

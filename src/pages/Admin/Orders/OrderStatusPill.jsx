@@ -1,7 +1,7 @@
 import StatusPill from '../../../components/admin/StatusPill'
-import { statusLabel } from './sampleOrders'
+import { statusLabel } from './orderStatus'
 
-const TONES = { PENDING: 'yellow', PAID: 'blue', SHIPPED: 'green', DELIVERED: 'green', CANCELLED: 'red' }
+const TONES = { CREADO: 'yellow', EN_PREPARACION: 'blue', DESPACHADO: 'green', ENTREGADO: 'green', DEVUELTO: 'red' }
 
 function OrderStatusPill({ status }) {
   return <StatusPill tone={TONES[status]}>{statusLabel(status)}</StatusPill>

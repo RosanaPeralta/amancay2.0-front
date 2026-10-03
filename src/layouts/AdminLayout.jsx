@@ -25,21 +25,11 @@ function AdminLayout() {
     <div className="flex min-h-svh flex-col bg-mist">
       <header className="sticky top-0 z-20 border-b border-dark/10 bg-white">
         <div className={`${WIDTH} flex h-16 items-center justify-between gap-4`}>
-          <div className="flex min-w-0 items-center gap-6">
+          <div className="flex min-w-0 items-center">
             <Link to="/admin" className="flex shrink-0 items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
               <BrandLogo compact />
               <span className="rounded-full bg-info px-2 py-0.5 text-[0.65rem] font-bold text-dark">Admin</span>
             </Link>
-            <nav className="hidden items-center gap-1 xl:flex" aria-label="Administración">
-              {links.map((link) => (
-                <NavLink key={link.to} to={link.to} className={linkClass}>
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d={link.icon} />
-                  </svg>
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
           </div>
           <div className="flex shrink-0 items-center gap-4 text-sm">
             <Link to="/" className="hidden items-center gap-1 font-semibold text-dark hover:text-primary sm:flex">
@@ -51,10 +41,14 @@ function AdminLayout() {
             <UserMenu />
           </div>
         </div>
-        {/* Below xl the links wrap onto their own row instead of scrolling sideways. */}
-        <nav className={`${WIDTH} flex flex-wrap gap-1 pb-3 xl:hidden`} aria-label="Administración">
+        {/* Seven sections plus the user menu don't fit in one row inside max-w-7xl,
+            so the links always get their own row (wrapping on narrow screens). */}
+        <nav className={`${WIDTH} flex flex-wrap gap-1 pb-3`} aria-label="Administración">
           {links.map((link) => (
             <NavLink key={link.to} to={link.to} className={linkClass}>
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d={link.icon} />
+              </svg>
               {link.label}
             </NavLink>
           ))}
