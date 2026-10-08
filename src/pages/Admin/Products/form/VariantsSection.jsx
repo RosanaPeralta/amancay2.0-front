@@ -71,9 +71,9 @@ function VariantsSection({ values, errors, setField }) {
             variant={variant}
             index={index}
             errors={errors}
-            canRemove={variants.length > 1}
+            canDelete={variants.length > 1}
             onChange={(next) => update(index, next)}
-            onRemove={() => setField('variants', variants.filter((_, itemIndex) => itemIndex !== index))}
+            onDelete={() => setField('variants', variants.filter((_, itemIndex) => itemIndex !== index))}
           />
         ))}
       </div>

@@ -26,6 +26,6 @@ export function deleteProduct(id) {
   return httpClient.delete(`/products/${id}`)
 }
 
-export function removeProductDiscount(id) {
+export function deleteProductDiscount(id) {
   return httpClient.delete(`/products/${id}/discounts`)
 }

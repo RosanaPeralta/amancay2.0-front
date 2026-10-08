@@ -9,7 +9,7 @@ import FavoriteButton from '../../components/FavoriteButton/FavoriteButton'
 import ProductReviews from '../../components/reviews/ProductReviews'
 import { fetchProductById } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
-import { addItem } from '../../store/slices/cartSlice'
+import { createItem } from '../../store/slices/cartSlice'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -69,9 +69,9 @@ function ProductDetail() {
     setQuantities((prev) => ({ ...prev, [variant.id]: Number(value) || 1 }))
   }
 
-  function handleAddToCart(variant) {
+  function handleCreateCartItem(variant) {
     dispatch(
-      addItem({
+      createItem({
         variantId: variant.id,
         productId: product.id,
         productName: product.name,
@@ -175,7 +175,7 @@ function ProductDetail() {
                           onChange={(event) => handleQuantityChange(variant, event.target.value)}
                           className="w-16 px-3 py-2 rounded-full border border-dark/10 bg-white text-sm text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                         />
-                        <Button onClick={() => handleAddToCart(variant)}>Agregar al carrito</Button>
+                        <Button onClick={() => handleCreateCartItem(variant)}>Agregar al carrito</Button>
                       </div>
                     )}
                   </div>

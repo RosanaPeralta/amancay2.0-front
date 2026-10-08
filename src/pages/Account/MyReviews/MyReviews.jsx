@@ -14,7 +14,7 @@ function MyReviews() {
   const { items, page, totalPages, status, error } = useSelector((state) => state.myReviews)
 
   const [pageNumber, setPageNumber] = useState(0)
-  const [editingId, setEditingId] = useState(null)
+  const [updatingId, setUpdatingId] = useState(null)
   const [actionError, setActionError] = useState(null)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function MyReviews() {
 
   async function handleUpdate(id, data) {
     await dispatch(updateMyReview({ id, data })).unwrap()
-    setEditingId(null)
+    setUpdatingId(null)
   }
 
   async function handleDelete(id) {
@@ -64,9 +64,9 @@ function MyReviews() {
                   </Link>
                 </p>
               </div>
-              {editingId !== review.id && (
+              {updatingId !== review.id && (
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setEditingId(review.id)}>
+                  <Button variant="outline" onClick={() => setUpdatingId(review.id)}>
                     Editar
                   </Button>
                   <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/5" onClick={() => handleDelete(review.id)}>
@@ -75,12 +75,12 @@ function MyReviews() {
                 </div>
               )}
             </div>
-            {editingId === review.id && (
+            {updatingId === review.id && (
               <ReviewForm
                 key={review.id}
                 review={review}
                 onSubmit={(data) => handleUpdate(review.id, data)}
-                onCancel={() => setEditingId(null)}
+                onCancel={() => setUpdatingId(null)}
               />
             )}
           </li>

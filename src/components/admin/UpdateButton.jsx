@@ -11,7 +11,7 @@ function PencilIcon() {
   )
 }
 
-function EditButton({ to, onClick, label = 'Editar' }) {
+function UpdateButton({ to, onClick, label = 'Editar' }) {
   if (to) {
     return (
       <Link to={to} className={className}>
@@ -28,4 +28,4 @@ function EditButton({ to, onClick, label = 'Editar' }) {
   )
 }
 
-export default EditButton
+export default UpdateButton

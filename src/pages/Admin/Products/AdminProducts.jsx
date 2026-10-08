@@ -7,7 +7,7 @@ import AdminPageHeader from '../../../components/admin/AdminPageHeader'
 import FilterChips from '../../../components/admin/FilterChips'
 import SearchField from '../../../components/admin/SearchField'
 import StatusPill from '../../../components/admin/StatusPill'
-import EditButton from '../../../components/admin/EditButton'
+import UpdateButton from '../../../components/admin/UpdateButton'
 import { rowClass, tableWrapClass, tdClass, thClass } from '../../../components/admin/styles'
 import { fetchAdminProducts } from '../../../store/slices/adminProductsSlice'
 import { fetchCategories } from '../../../store/slices/categoriesSlice'
@@ -42,7 +42,7 @@ function ProductRow({ product, categoryName }) {
         {product.active ? <StatusPill tone="green">Activo</StatusPill> : <StatusPill>Borrador</StatusPill>}
       </td>
       <td className={`${tdClass} text-right`}>
-        <EditButton to={`/admin/products/${product.id}`} />
+        <UpdateButton to={`/admin/products/${product.id}`} />
       </td>
     </tr>
   )

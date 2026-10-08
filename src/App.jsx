@@ -23,7 +23,7 @@ import OrderDetail from './pages/Account/Orders/OrderDetail'
 import Users from './pages/Admin/Users/Users'
 import Reviews from './pages/Admin/Reviews/Reviews'
 import AdminProducts from './pages/Admin/Products/AdminProducts'
-import ProductEdit from './pages/Admin/Products/ProductEdit'
+import ProductUpdate from './pages/Admin/Products/ProductUpdate'
 import Categories from './pages/Admin/Categories/Categories'
 import Discounts from './pages/Admin/Discounts/Discounts'
 import AdminOrders from './pages/Admin/Orders/Orders'
@@ -61,8 +61,8 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/products" replace />} />
             <Route path="products" element={<AdminProducts />} />
-            <Route path="products/new" element={<ProductEdit />} />
-            <Route path="products/:id" element={<ProductEdit />} />
+            <Route path="products/new" element={<ProductUpdate />} />
+            <Route path="products/:id" element={<ProductUpdate />} />
             <Route path="categories" element={<Categories />} />
             <Route path="discounts" element={<Discounts />} />
             <Route path="orders" element={<AdminOrders />} />

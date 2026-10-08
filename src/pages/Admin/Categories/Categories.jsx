@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button'
 import Notice from '../../../components/ui/Notice'
 import Loading from '../../../components/Loading/Loading'
 import AdminPageHeader from '../../../components/admin/AdminPageHeader'
-import EditButton from '../../../components/admin/EditButton'
+import UpdateButton from '../../../components/admin/UpdateButton'
 import { rowClass, tableWrapClass, tdClass, thClass } from '../../../components/admin/styles'
 import { fetchCategories } from '../../../store/slices/categoriesSlice'
 import { fetchAdminProducts } from '../../../store/slices/adminProductsSlice'
@@ -14,8 +14,8 @@ function Categories() {
   const dispatch = useDispatch()
   const { items: categories, status, error } = useSelector((state) => state.categories)
   const products = useSelector((state) => state.adminProducts.items)
-  // null = panel closed, 'new' = creating, otherwise the id being edited
-  const [editing, setEditing] = useState(null)
+  // null = panel closed, 'new' = creating, otherwise the id being updated
+  const [updating, setUpdating] = useState(null)
 
   useEffect(() => {
     dispatch(fetchCategories())
@@ -23,14 +23,14 @@ function Categories() {
   }, [dispatch])
 
   const countFor = (id) => products.filter((product) => product.categoryIds?.includes(id)).length
-  const selected = categories.find((category) => category.id === editing) ?? null
+  const selected = categories.find((category) => category.id === updating) ?? null
 
   return (
     <>
       <AdminPageHeader
         title="Categorías"
         subtitle={`${categories.length} categorías`}
-        actions={<Button onClick={() => setEditing('new')}>+ Nueva categoría</Button>}
+        actions={<Button onClick={() => setUpdating('new')}>+ Nueva categoría</Button>}
       />
 
       {status === 'idle' || status === 'loading' ? (
@@ -50,10 +50,10 @@ function Categories() {
               <tbody>
                 {categories.map((category) => {
                   return (
-                    <tr key={category.id} className={rowClass(editing === category.id)}>
+                    <tr key={category.id} className={rowClass(updating === category.id)}>
                       <td className={`${tdClass} font-bold text-dark`}>{category.name}</td>
                       <td className={`${tdClass} text-right`}>
-                        <EditButton onClick={() => setEditing(category.id)} />
+                        <UpdateButton onClick={() => setUpdating(category.id)} />
                       </td>
                     </tr>
                   )
@@ -62,13 +62,13 @@ function Categories() {
             </table>
           </div>
 
-          {editing ? (
+          {updating ? (
             <CategoryForm
-              key={editing}
+              key={updating}
               category={selected}
               productCount={selected ? countFor(selected.id) : 0}
               otherNames={categories.filter((category) => category.id !== selected?.id).map((category) => category.name)}
-              onDone={(id) => setEditing(id)}
+              onDone={(id) => setUpdating(id)}
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-dark/15 p-6 text-center text-sm text-dark/50">

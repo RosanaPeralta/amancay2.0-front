@@ -16,9 +16,9 @@ export const toggleFavorite = createAsyncThunk(
   async ({ productId, favorite }) => {
     try {
       if (favorite) {
-        await favoritesService.addFavorite(productId)
+        await favoritesService.createFavorite(productId)
       } else {
-        await favoritesService.removeFavorite(productId)
+        await favoritesService.deleteFavorite(productId)
       }
     } catch (error) {
       if (error.status !== 409 && error.status !== 404) throw error

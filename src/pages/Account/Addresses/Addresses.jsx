@@ -26,7 +26,7 @@ function Addresses() {
   const dispatch = useDispatch()
   const { items, status, error } = useSelector((state) => state.addresses)
 
-  const [editing, setEditing] = useState(null) // null | 'new' | address
+  const [updating, setUpdating] = useState(null) // null | 'new' | address
   const [actionError, setActionError] = useState(null)
 
   useEffect(() => {
@@ -34,12 +34,12 @@ function Addresses() {
   }, [dispatch])
 
   async function handleSubmit(data) {
-    if (editing === 'new') {
+    if (updating === 'new') {
       await dispatch(createAddress(data)).unwrap()
     } else {
-      await dispatch(updateAddress({ id: editing.id, data })).unwrap()
+      await dispatch(updateAddress({ id: updating.id, data })).unwrap()
     }
-    setEditing(null)
+    setUpdating(null)
   }
 
   async function run(action) {
@@ -67,26 +67,26 @@ function Addresses() {
         <p className="body-text-light text-sm">
           {items.length} de {MAX_ADDRESSES} direcciones
         </p>
-        {editing === null && (
-          <Button onClick={() => setEditing('new')} disabled={limitReached}>
+        {updating === null && (
+          <Button onClick={() => setUpdating('new')} disabled={limitReached}>
             Agregar dirección
           </Button>
         )}
       </div>
 
-      {editing !== null && (
+      {updating !== null && (
         <AddressForm
-          key={editing === 'new' ? 'new' : editing.id}
-          address={editing === 'new' ? null : editing}
+          key={updating === 'new' ? 'new' : updating.id}
+          address={updating === 'new' ? null : updating}
           onSubmit={handleSubmit}
-          onCancel={() => setEditing(null)}
+          onCancel={() => setUpdating(null)}
         />
       )}
 
       {actionError && <Notice variant="error">{actionError}</Notice>}
 
       {items.length === 0 ? (
-        editing === null && <Notice>Todavía no agregaste ninguna dirección.</Notice>
+        updating === null && <Notice>Todavía no agregaste ninguna dirección.</Notice>
       ) : (
         <ul className="space-y-4">
           {items.map((address) => {
@@ -111,7 +111,7 @@ function Addresses() {
                         Marcar como predeterminada
                       </Button>
                     )}
-                    <Button variant="outline" onClick={() => setEditing(address)}>
+                    <Button variant="outline" onClick={() => setUpdating(address)}>
                       Editar
                     </Button>
                     <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/5" onClick={() => handleDelete(address)}>

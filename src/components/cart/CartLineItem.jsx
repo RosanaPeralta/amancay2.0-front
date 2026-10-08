@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Button from '../ui/Button'
-import { removeItem, updateQuantity } from '../../store/slices/cartSlice'
+import { deleteItem, updateQuantity } from '../../store/slices/cartSlice'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -50,7 +50,7 @@ function CartLineItem({ item }) {
       <Button
         variant="outline"
         className="text-danger border-danger/30 hover:bg-danger/5"
-        onClick={() => dispatch(removeItem(item.variantId))}
+        onClick={() => dispatch(deleteItem(item.variantId))}
       >
         Quitar
       </Button>

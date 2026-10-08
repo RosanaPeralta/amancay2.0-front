@@ -7,7 +7,7 @@ function ImagesSection({ values, errors, setField }) {
   const [url, setUrl] = useState('')
   const [urlError, setUrlError] = useState(null)
 
-  function handleAdd() {
+  function handleCreate() {
     const result = imageUrlSchema.safeParse(url.trim())
     if (!result.success) {
       setUrlError(result.error.issues[0].message)
@@ -18,7 +18,7 @@ function ImagesSection({ values, errors, setField }) {
     setUrlError(null)
   }
 
-  function handleRemove(index) {
+  function handleDelete(index) {
     setField(
       'images',
       values.images.filter((_, itemIndex) => itemIndex !== index),
@@ -41,13 +41,13 @@ function ImagesSection({ values, errors, setField }) {
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
               event.preventDefault()
-              handleAdd()
+              handleCreate()
             }
           }}
         />
         <button
           type="button"
-          onClick={handleAdd}
+          onClick={handleCreate}
           className="shrink-0 rounded-full border border-dark/15 bg-white px-4 text-sm font-bold text-dark hover:border-primary/40 hover:text-primary"
         >
           + Agregar imagen
@@ -62,7 +62,7 @@ function ImagesSection({ values, errors, setField }) {
               <img src={image.imageUrl} alt="" className="h-full w-full object-contain mix-blend-multiply" />
               <button
                 type="button"
-                onClick={() => handleRemove(index)}
+                onClick={() => handleDelete(index)}
                 aria-label="Quitar imagen"
                 className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white text-dark/60 shadow hover:text-danger"
               >

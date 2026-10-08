@@ -30,7 +30,7 @@ const cartSlice = createSlice({
     items: loadInitialItems(),
   },
   reducers: {
-    addItem(state, action) {
+    createItem(state, action) {
       const { variantId, productId, productName, imageUrl, unitPrice, maxStock, quantity = 1 } = action.payload
       const existing = state.items.find((item) => item.variantId === variantId)
       if (existing) {
@@ -55,7 +55,7 @@ const cartSlice = createSlice({
       if (item) item.quantity = clampQuantity(quantity, item.maxStock)
       persist(state.items)
     },
-    removeItem(state, action) {
+    deleteItem(state, action) {
       state.items = state.items.filter((item) => item.variantId !== action.payload)
       persist(state.items)
     },
@@ -66,7 +66,7 @@ const cartSlice = createSlice({
   },
 })
 
-export const { addItem, updateQuantity, removeItem, clear } = cartSlice.actions
+export const { createItem, updateQuantity, deleteItem, clear } = cartSlice.actions
 
 export const selectCartItems = (state) => state.cart.items
 export const selectCartCount = (state) => state.cart.items.reduce((sum, item) => sum + item.quantity, 0)

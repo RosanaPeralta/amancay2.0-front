@@ -9,10 +9,10 @@ export function listFavoriteIds() {
   return httpClient.get('/me/favorites/ids')
 }
 
-export function addFavorite(productId) {
+export function createFavorite(productId) {
   return httpClient.post('/me/favorites', { productId })
 }
 
-export function removeFavorite(productId) {
+export function deleteFavorite(productId) {
   return httpClient.delete(`/me/favorites/${productId}`)
 }

@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button'
 import Notice from '../../../components/ui/Notice'
 import Loading from '../../../components/Loading/Loading'
 import AdminPageHeader from '../../../components/admin/AdminPageHeader'
-import EditButton from '../../../components/admin/EditButton'
+import UpdateButton from '../../../components/admin/UpdateButton'
 import { rowClass, tableWrapClass, tdClass, thClass } from '../../../components/admin/styles'
 import { fetchDiscounts } from '../../../store/slices/discountsSlice'
 import { fetchAdminProducts } from '../../../store/slices/adminProductsSlice'
@@ -14,7 +14,7 @@ function Discounts() {
   const dispatch = useDispatch()
   const { items: discounts, status, error } = useSelector((state) => state.discounts)
   const products = useSelector((state) => state.adminProducts.items)
-  const [editing, setEditing] = useState(null)
+  const [updating, setUpdating] = useState(null)
 
   useEffect(() => {
     dispatch(fetchDiscounts())
@@ -22,14 +22,14 @@ function Discounts() {
   }, [dispatch])
 
   const countFor = (id) => products.filter((product) => product.discount?.id === id).length
-  const selected = discounts.find((discount) => discount.id === editing) ?? null
+  const selected = discounts.find((discount) => discount.id === updating) ?? null
 
   return (
     <>
       <AdminPageHeader
         title="Descuentos"
         subtitle="Asigna un descuento a un producto desde su formulario de edición."
-        actions={<Button onClick={() => setEditing('new')}>+ Nuevo descuento</Button>}
+        actions={<Button onClick={() => setUpdating('new')}>+ Nuevo descuento</Button>}
       />
 
       {status === 'idle' || status === 'loading' ? (
@@ -56,7 +56,7 @@ function Discounts() {
                   {discounts.map((discount) => {
                     const count = countFor(discount.id)
                     return (
-                      <tr key={discount.id} className={rowClass(editing === discount.id)}>
+                      <tr key={discount.id} className={rowClass(updating === discount.id)}>
                         <td className={`${tdClass} text-dark/60`}>#{discount.id}</td>
                         <td className={`${tdClass} font-bold text-dark`}>{discount.description}</td>
                         <td className={tdClass}>
@@ -68,7 +68,7 @@ function Discounts() {
                           {count} {count === 1 ? 'producto' : 'productos'}
                         </td>
                         <td className={`${tdClass} text-right`}>
-                          <EditButton onClick={() => setEditing(discount.id)} />
+                          <UpdateButton onClick={() => setUpdating(discount.id)} />
                         </td>
                       </tr>
                     )
@@ -78,12 +78,12 @@ function Discounts() {
             </div>
           )}
 
-          {editing ? (
+          {updating ? (
             <DiscountForm
-              key={editing}
+              key={updating}
               discount={selected}
               productCount={selected ? countFor(selected.id) : 0}
-              onDone={(id) => setEditing(id)}
+              onDone={(id) => setUpdating(id)}
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-dark/15 p-6 text-center text-sm text-dark/50">

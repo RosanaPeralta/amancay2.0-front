@@ -20,10 +20,10 @@ export const fetchAdminProducts = createAsyncThunk(
 
 export const createProduct = mutationThunk('adminProducts/create', (data) => productsService.createProduct(data))
 // The update endpoint ignores a null discountId, so clearing a discount is a separate call.
-export const updateProduct = mutationThunk('adminProducts/update', async ({ id, data, removeDiscount }) => {
+export const updateProduct = mutationThunk('adminProducts/update', async ({ id, data, deleteDiscount }) => {
   const product = await productsService.updateProduct(id, data)
-  if (!removeDiscount) return product
-  await productsService.removeProductDiscount(id)
+  if (!deleteDiscount) return product
+  await productsService.deleteProductDiscount(id)
   return productsService.getProduct(id)
 })
 export const deleteProduct = mutationThunk('adminProducts/delete', async (id) => {

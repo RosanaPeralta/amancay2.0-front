@@ -52,8 +52,8 @@ function ProductForm({ product }) {
       if (isNew) {
         await dispatch(createProduct(data)).unwrap()
       } else {
-        const removeDiscount = Boolean(product.discount) && !result.data.discountId
-        await dispatch(updateProduct({ id: product.id, data, removeDiscount })).unwrap()
+        const deleteDiscount = Boolean(product.discount) && !result.data.discountId
+        await dispatch(updateProduct({ id: product.id, data, deleteDiscount })).unwrap()
       }
       navigate('/admin/products')
     } catch (err) {
@@ -123,7 +123,7 @@ function ProductForm({ product }) {
   )
 }
 
-function ProductEdit() {
+function ProductUpdate() {
   const dispatch = useDispatch()
   const { id } = useParams()
   const [state, setState] = useState({ product: null, status: id ? 'loading' : 'ready', error: null, loadedId: null })
@@ -150,4 +150,4 @@ function ProductEdit() {
   return <ProductForm key={id ?? 'new'} product={id ? state.product : null} />
 }
 
-export default ProductEdit
+export default ProductUpdate
