@@ -76,14 +76,19 @@ function ProductDetail() {
         productId: product.id,
         productName: product.name,
         imageUrl: images[0]?.imageUrl ?? null,
-        unitPrice: variant.price,
+        unitPrice: discountedPrice(variant.price),
         maxStock: variant.stockQuantity,
         quantity: quantityFor(variant),
       }),
     )
   }
 
+  function discountedPrice(price) {
+    return discountPercentage ? price * (1 - discountPercentage / 100) : price
+  }
+
   const images = product.images || []
+  const discountPercentage = Number(product.discount?.percentage) || 0
   const activeImage = images[activeImageIndex]
   const categoryNames = (product.categoryIds || [])
     .map((categoryId) => categories.find((category) => category.id === categoryId)?.name)
@@ -158,9 +163,21 @@ function ProductDetail() {
                 return (
                   <div key={variant.id} className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <span className="text-2xl font-semibold text-primary">
-                        {currencyFormatter.format(variant.price)}
-                      </span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-semibold text-primary">
+                          {currencyFormatter.format(discountedPrice(variant.price))}
+                        </span>
+                        {discountPercentage > 0 && (
+                          <>
+                            <span className="text-sm text-dark/40 line-through">
+                              {currencyFormatter.format(variant.price)}
+                            </span>
+                            <span className="px-2.5 py-1 rounded-full bg-info-pink text-white text-[0.7rem] font-bold">
+                              -{Math.round(discountPercentage)}%
+                            </span>
+                          </>
+                        )}
+                      </div>
                       <span className={`block text-sm ${inStock ? 'text-dark/60' : 'text-danger'}`}>
                         {inStock ? `${variant.stockQuantity} en stock` : 'Sin stock'}
                       </span>
