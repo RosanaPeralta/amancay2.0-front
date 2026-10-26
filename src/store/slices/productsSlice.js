@@ -1,17 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getProduct, listProducts } from '../../services/productsService'
 
-// The list endpoint returns lightweight summaries (no price/images), so
-// hydrate each one with a detail call to render a real product card.
-async function hydrateSummaries(summaries) {
-  return Promise.all(summaries.map((summary) => getProduct(summary.id)))
-}
-
 export const fetchFeaturedProducts = createAsyncThunk(
   'products/fetchFeatured',
   async () => {
     const page = await listProducts({ page: 0, size: 8, isActive: true })
-    return hydrateSummaries(page.content)
+    return page.content
   },
   {
     condition: (_, { getState }) => getState().products.featured.status !== 'loading',
@@ -22,8 +16,7 @@ export const fetchProductsList = createAsyncThunk(
   'products/fetchList',
   async ({ page = 0, size = 12, name, categoryId, sort } = {}) => {
     const data = await listProducts({ page, size, isActive: true, name, categoryId, sort })
-    const items = await hydrateSummaries(data.content)
-    return { items, page: data.page, totalPages: data.totalPages, totalElements: data.totalElements }
+    return { items: data.content, page: data.page, totalPages: data.totalPages, totalElements: data.totalElements }
   },
 )
 
