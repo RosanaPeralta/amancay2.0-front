@@ -1,10 +1,36 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
 import Button from '../../../components/ui/Button'
 import Notice from '../../../components/ui/Notice'
+import Pagination from '../../../components/ui/Pagination'
+import ProductCard from '../../../components/ProductCard/ProductCard'
 import { ProductGridSkeleton } from '../../../components/ProductCard/ProductCardSkeleton'
-import { fetchFavoritesPage, toggleFavorite } from '../../../store/slices/favoritesSlice'
+import { fetchFavoritesPage } from '../../../store/slices/favoritesSlice'
+import { fetchCategories } from '../../../store/slices/categoriesSlice'
+
+const PAGE_SIZE = 12
+
+const GRID_CLASS = 'sm:grid-cols-2 xl:grid-cols-3 gap-5'
+
+function FavoriteCard({ favorite }) {
+  const product = favorite.product ?? { id: favorite.productId, name: favorite.name }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className={`flex-1 ${favorite.active ? '' : 'opacity-60'}`}>
+        <ProductCard product={product} />
+      </div>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <span className="caption-text text-left">
+          Guardado el {new Date(favorite.createdAt).toLocaleDateString('es-AR')}
+        </span>
+        {!favorite.active && (
+          <span className="rounded-full border border-dark/10 px-2 py-0.5 text-xs text-dark/60">No disponible</span>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function Favorites() {
   const dispatch = useDispatch()
@@ -12,54 +38,36 @@ function Favorites() {
   const [pageNumber, setPageNumber] = useState(0)
 
   useEffect(() => {
-    dispatch(fetchFavoritesPage({ page: pageNumber, size: 12 }))
+    dispatch(fetchCategories())
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(fetchFavoritesPage({ page: pageNumber, size: PAGE_SIZE }))
   }, [dispatch, pageNumber])
 
   const isLoading = status === 'idle' || status === 'loading'
 
-  if (isLoading) return <ProductGridSkeleton count={6} />
+  if (isLoading) return <ProductGridSkeleton count={6} className={GRID_CLASS} />
   if (error) return <Notice variant="error">No se pudieron cargar tus favoritos: {error}</Notice>
-  if (items.length === 0) return <Notice>Todavía no guardaste ningún favorito.</Notice>
+  if (items.length === 0) {
+    return (
+      <Notice>
+        <p>Todavía no guardaste ningún favorito.</p>
+        <Button to="/products" className="mt-4">
+          Explorar productos
+        </Button>
+      </Notice>
+    )
+  }
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 ${GRID_CLASS} animate-fade-in-up`}>
         {items.map((favorite) => (
-          <div key={favorite.productId} className="flex flex-col gap-3 rounded-lg border border-dark/10 bg-white p-5">
-            <Link
-              to={`/products/${favorite.productId}`}
-              className="font-medium text-dark hover-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded"
-            >
-              {favorite.name}
-            </Link>
-            {!favorite.active && (
-              <span className="self-start px-2 py-0.5 rounded-full border border-dark/10 text-dark/60 text-xs">
-                No disponible
-              </span>
-            )}
-            <div className="mt-auto flex items-center justify-between pt-2">
-              <span className="caption-text">Guardado el {new Date(favorite.createdAt).toLocaleDateString('es-AR')}</span>
-              <Button variant="outline" onClick={() => dispatch(toggleFavorite({ productId: favorite.productId, favorite: false }))}>
-                Quitar
-              </Button>
-            </div>
-          </div>
+          <FavoriteCard key={favorite.productId} favorite={favorite} />
         ))}
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-10">
-          <Button variant="outline" onClick={() => setPageNumber((n) => Math.max(0, n - 1))} disabled={pageNumber === 0}>
-            Anterior
-          </Button>
-          <span className="text-sm text-dark/70">
-            Página {page + 1} de {totalPages || 1}
-          </span>
-          <Button variant="outline" onClick={() => setPageNumber((n) => n + 1)} disabled={pageNumber + 1 >= totalPages}>
-            Siguiente
-          </Button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPageNumber} />
     </>
   )
 }

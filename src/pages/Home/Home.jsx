@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Container from '../../components/ui/Container'
 import Notice from '../../components/ui/Notice'
@@ -11,25 +10,11 @@ import { fetchCategories } from '../../store/slices/categoriesSlice'
 import HomeHero from './HomeHero'
 import CategoryGrid from './CategoryGrid'
 import BrandBanner from './BrandBanner'
+import SectionHeader from './SectionHeader'
+import ForYouSection from './ForYouSection'
+import { useRecommendations } from '../../components/Recommendations/useRecommendations'
 
 const GRID_CLASS = 'sm:grid-cols-2 lg:grid-cols-4 gap-5'
-
-function SectionHeader({ title, subtitle, linkLabel }) {
-  return (
-    <div className="mb-6 flex items-end justify-between gap-4 text-left">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight text-primary">{title}</h2>
-        {subtitle && <p className="mt-1 text-sm text-dark/60">{subtitle}</p>}
-      </div>
-      <Link to="/products" className="flex shrink-0 items-center gap-1 text-sm font-bold text-dark hover:text-primary">
-        {linkLabel}
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      </Link>
-    </div>
-  )
-}
 
 function Home() {
   const dispatch = useDispatch()
@@ -46,6 +31,10 @@ function Home() {
     error: categoriesError,
   } = useSelector((state) => state.categories)
 
+  const recommendations = useRecommendations()
+  // For a logged-in user the hero spotlights their top suggestion instead of a generic product.
+  const topRecommendation = recommendations.status === 'succeeded' ? recommendations.items[0] : undefined
+
   useEffect(() => {
     dispatch(fetchFeaturedProducts())
     dispatch(fetchCategories())
@@ -59,7 +48,12 @@ function Home() {
       <TopLoadingBar active={isLoadingProducts || isLoadingCategories} />
 
       <Container>
-        <HomeHero featuredProduct={products[0]} />
+        <HomeHero
+          featuredProduct={topRecommendation ?? products[0]}
+          featuredLabel={topRecommendation ? 'Para vos' : 'Destacado'}
+        />
+
+        {recommendations.enabled && <ForYouSection recommendations={recommendations} />}
 
         <section id="categories" className="scroll-mt-24 py-12">
           <SectionHeader title="Compra por categoría" linkLabel="Todos los productos" />
