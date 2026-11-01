@@ -8,7 +8,7 @@ import Loading from '../../components/Loading/Loading'
 import PaymentMethodForm from '../../components/checkout/PaymentMethodForm'
 import { fetchAddresses } from '../../store/slices/addressesSlice'
 import { clear, selectCartItems, selectCartSubtotal } from '../../store/slices/cartSlice'
-import { createOrder } from '../../services/ordersService'
+import { createOrder, getShippingQuote } from '../../services/ordersService'
 import { createPayment, retryPayment } from '../../services/paymentsService'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -26,10 +26,26 @@ function Checkout() {
   const [order, setOrder] = useState(null)
   const [payment, setPayment] = useState(null)
   const [attemptingPayment, setAttemptingPayment] = useState(false)
+  const [shippingQuote, setShippingQuote] = useState({ addressId: null, data: null, error: null })
 
   useEffect(() => {
     dispatch(fetchAddresses())
   }, [dispatch])
+
+  useEffect(() => {
+    if (!selectedAddressId) return
+    let cancelled = false
+    getShippingQuote(selectedAddressId)
+      .then((data) => !cancelled && setShippingQuote({ addressId: selectedAddressId, data, error: null }))
+      .catch((error) => !cancelled && setShippingQuote({ addressId: selectedAddressId, data: null, error }))
+    return () => {
+      cancelled = true
+    }
+  }, [selectedAddressId])
+
+  // The quote belongs to the address it was requested for; while a new one loads, show nothing stale.
+  const currentQuote = shippingQuote.addressId === selectedAddressId ? shippingQuote : null
+  const shippingCost = currentQuote?.data?.cost ?? null
 
   if (!selectedAddressId && addresses.length > 0) {
     const defaultAddress = addresses.find((address) => address.isDefault) ?? addresses[0]
@@ -193,9 +209,30 @@ function Checkout() {
               </li>
             ))}
           </ul>
+          <div className="mt-4 space-y-2 border-t border-dark/10 pt-4 text-sm text-dark">
+            <div className="flex justify-between gap-2">
+              <span>Subtotal</span>
+              <span>{currencyFormatter.format(subtotal)}</span>
+            </div>
+            <div className="flex justify-between gap-2">
+              <span>
+                Envío
+                {currentQuote?.data && <span className="text-dark/60"> ({currentQuote.data.distanceKm} km)</span>}
+              </span>
+              <span>
+                {shippingCost !== null
+                  ? currencyFormatter.format(shippingCost)
+                  : currentQuote?.error
+                    ? 'No disponible'
+                    : selectedAddressId
+                      ? 'Calculando…'
+                      : '—'}
+              </span>
+            </div>
+          </div>
           <div className="mt-4 flex justify-between border-t border-dark/10 pt-4 font-semibold text-dark">
             <span>Total</span>
-            <span>{currencyFormatter.format(subtotal)}</span>
+            <span>{currencyFormatter.format(subtotal + (shippingCost ?? 0))}</span>
           </div>
         </Panel>
       </div>
