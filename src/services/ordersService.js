@@ -8,6 +8,10 @@ export function getOrder(id) {
   return httpClient.get(`/orders/${id}`)
 }
 
+export function getShippingQuote(addressId) {
+  return httpClient.get(`/orders/shipping-quote?addressId=${addressId}`)
+}
+
 export function createOrder(data) {
   return httpClient.post('/orders', data)
 }
