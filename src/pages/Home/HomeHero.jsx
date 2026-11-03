@@ -5,7 +5,7 @@ import sideImage from '../../assets/gallery/gallery4.png'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
-function FeaturedProductCard({ product }) {
+function FeaturedProductCard({ product, label }) {
   if (!product) return <div className="rounded-2xl bg-mist animate-pulse" />
 
   const image = product.images?.[0]
@@ -25,7 +25,7 @@ function FeaturedProductCard({ product }) {
         )}
       </div>
       <div className="mt-3 text-left">
-        <p className="text-[0.65rem] font-bold uppercase tracking-wider text-secondary">Destacado</p>
+        <p className="text-[0.65rem] font-bold uppercase tracking-wider text-secondary">{label}</p>
         <p className="font-bold leading-snug text-dark group-hover:text-primary">{product.name}</p>
         {price !== undefined && <p className="mt-1 text-sm font-bold text-primary">{currencyFormatter.format(price)}</p>}
       </div>
@@ -33,7 +33,7 @@ function FeaturedProductCard({ product }) {
   )
 }
 
-function HomeHero({ featuredProduct }) {
+function HomeHero({ featuredProduct, featuredLabel = 'Destacado' }) {
   return (
     <section className="grid items-center gap-10 py-12 lg:grid-cols-2 lg:py-16">
       <div className="text-left animate-fade-in-up">
@@ -66,7 +66,7 @@ function HomeHero({ featuredProduct }) {
           <div className="overflow-hidden rounded-3xl">
             <img src={sideImage} alt="Excursionista con bastones de trekking" className="h-full w-full object-cover" />
           </div>
-          <FeaturedProductCard product={featuredProduct} />
+          <FeaturedProductCard product={featuredProduct} label={featuredLabel} />
         </div>
       </div>
     </section>

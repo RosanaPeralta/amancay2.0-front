@@ -13,6 +13,7 @@ import cartReducer from './slices/cartSlice'
 import ordersReducer from './slices/ordersSlice'
 import adminPaymentsReducer from './slices/adminPaymentsSlice'
 import adminOrdersReducer from './slices/adminOrdersSlice'
+import recommendationsReducer from './slices/recommendationsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -30,5 +31,6 @@ export const store = configureStore({
     orders: ordersReducer,
     adminPayments: adminPaymentsReducer,
     adminOrders: adminOrdersReducer,
+    recommendations: recommendationsReducer,
   },
 })
