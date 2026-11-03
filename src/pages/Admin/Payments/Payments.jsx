@@ -5,6 +5,7 @@ import Notice from '../../../components/ui/Notice'
 import Loading from '../../../components/Loading/Loading'
 import AdminPageHeader from '../../../components/admin/AdminPageHeader'
 import { decidePendingPayment, fetchPendingPayments } from '../../../store/slices/adminPaymentsSlice'
+import { paymentMethodLabel } from '../../../lib/mercadoPagoCheckout'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -35,7 +36,10 @@ function Payments() {
 
   return (
     <div className="space-y-6 text-left">
-      <AdminPageHeader title="Pagos" subtitle="Confirma o rechaza las transferencias bancarias pendientes." />
+      <AdminPageHeader
+        title="Pagos"
+        subtitle="Confirma o rechaza los pagos pendientes. Los de Mercado Pago se confirman solos al acreditarse."
+      />
       {actionError && <Notice variant="error">{actionError}</Notice>}
 
       {isLoading ? (
@@ -43,7 +47,7 @@ function Payments() {
       ) : error ? (
         <Notice variant="error">No se pudieron cargar los pagos pendientes: {error}</Notice>
       ) : items.length === 0 ? (
-        <Notice>No hay transferencias esperando confirmación.</Notice>
+        <Notice>No hay pagos esperando confirmación.</Notice>
       ) : (
         <ul className="space-y-4">
           {items.map((payment) => (
@@ -54,9 +58,14 @@ function Payments() {
                   <p className="caption-text">
                     Pedido #{payment.orderId.slice(0, 8)} · {dateFormatter.format(new Date(payment.createdAt))}
                   </p>
-                  <p className="text-dark text-sm mt-1">
-                    Referencia: {payment.transferReference || '(todavía no enviada)'}
-                  </p>
+                  <p className="text-dark text-sm mt-1">{paymentMethodLabel(payment.method)}</p>
+                  {payment.method === 'MERCADO_PAGO' ? (
+                    <p className="caption-text">Esperando que el comprador complete el pago en Mercado Pago.</p>
+                  ) : (
+                    <p className="text-dark text-sm">
+                      Referencia: {payment.transferReference || '(todavía no enviada)'}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-lg font-semibold text-primary mb-2">

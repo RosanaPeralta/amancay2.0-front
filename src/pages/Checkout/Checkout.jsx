@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import Container from '../../components/ui/Container'
 import Panel from '../../components/ui/Panel'
 import Button from '../../components/ui/Button'
@@ -10,6 +11,12 @@ import { fetchAddresses } from '../../store/slices/addressesSlice'
 import { clear, selectCartItems, selectCartSubtotal } from '../../store/slices/cartSlice'
 import { createOrder } from '../../services/ordersService'
 import { createPayment, retryPayment } from '../../services/paymentsService'
+import {
+  canReturnFromMercadoPago,
+  isPendingMercadoPago,
+  openMercadoPagoCheckout,
+  prepareMercadoPagoTab,
+} from '../../lib/mercadoPagoCheckout'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -18,6 +25,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 
 function Checkout() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const items = useSelector(selectCartItems)
   const subtotal = useSelector(selectCartSubtotal)
   const { items: addresses, status: addressesStatus } = useSelector((state) => state.addresses)
@@ -26,6 +34,7 @@ function Checkout() {
   const [order, setOrder] = useState(null)
   const [payment, setPayment] = useState(null)
   const [attemptingPayment, setAttemptingPayment] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
     dispatch(fetchAddresses())
@@ -36,27 +45,49 @@ function Checkout() {
     setSelectedAddressId(defaultAddress.id)
   }
 
+  // Mercado Pago payments are completed on Mercado Pago's site (see openMercadoPagoCheckout).
+  function handlePaymentResult(result, mercadoPagoTab) {
+    setPayment(result)
+    if (isPendingMercadoPago(result)) {
+      setRedirecting(canReturnFromMercadoPago())
+      openMercadoPagoCheckout(result, navigate, mercadoPagoTab)
+    } else {
+      mercadoPagoTab?.close()
+    }
+  }
+
   // Once the order exists the cart is cleared, even if the payment fails.
   async function handlePlaceOrder({ method, card }) {
-    const createdOrder = await createOrder({
-      shippingAddressId: selectedAddressId,
-      items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
-    })
-    dispatch(clear())
-    setOrder(createdOrder)
-    setAttemptingPayment(true)
+    // Opened before any request so the browser doesn't block it as a pop-up.
+    const mercadoPagoTab = method === 'MERCADO_PAGO' ? prepareMercadoPagoTab() : null
+    let result = null
     try {
-      setPayment(await createPayment(createdOrder.id, { method, card }))
+      const createdOrder = await createOrder({
+        shippingAddressId: selectedAddressId,
+        items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
+      })
+      dispatch(clear())
+      setOrder(createdOrder)
+      setAttemptingPayment(true)
+      result = await createPayment(createdOrder.id, { method, card })
     } finally {
       setAttemptingPayment(false)
+      if (result) handlePaymentResult(result, mercadoPagoTab)
+      else mercadoPagoTab?.close()
     }
   }
 
   async function handleRetryPayment({ method, card }) {
-    const result = payment
-      ? await retryPayment(payment.id, { method, card })
-      : await createPayment(order.id, { method, card })
-    setPayment(result)
+    const mercadoPagoTab = method === 'MERCADO_PAGO' ? prepareMercadoPagoTab() : null
+    try {
+      const result = payment
+        ? await retryPayment(payment.id, { method, card })
+        : await createPayment(order.id, { method, card })
+      handlePaymentResult(result, mercadoPagoTab)
+    } catch (err) {
+      mercadoPagoTab?.close()
+      throw err
+    }
   }
 
   if (items.length === 0 && !order) {
@@ -90,7 +121,18 @@ function Checkout() {
             <Notice>Pago aprobado. Ya estamos preparando tu pedido.</Notice>
           )}
 
-          {!attemptingPayment && payment?.status === 'PENDIENTE' && (
+          {!attemptingPayment && isPendingMercadoPago(payment) && (
+            <div className="rounded-2xl border border-primary/15 bg-primary/5 p-6 text-center space-y-4">
+              {redirecting && (
+                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-dark/10 border-t-primary" />
+              )}
+              <p className="font-medium text-dark">Te estamos llevando a Mercado Pago para completar el pago…</p>
+              <p className="text-sm text-dark/60">Si no se abre automáticamente, usá el botón.</p>
+              <Button onClick={() => openMercadoPagoCheckout(payment, navigate)}>Ir a Mercado Pago</Button>
+            </div>
+          )}
+
+          {!attemptingPayment && payment?.status === 'PENDIENTE' && !isPendingMercadoPago(payment) && (
             <>
               <Notice>Pago pendiente de confirmación (transferencia bancaria).</Notice>
               <div className="text-center">

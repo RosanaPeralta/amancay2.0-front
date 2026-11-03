@@ -10,6 +10,7 @@ import Products from './pages/Products/Products'
 import ProductDetail from './pages/ProductDetail/ProductDetail'
 import Cart from './pages/Cart/Cart'
 import Checkout from './pages/Checkout/Checkout'
+import MercadoPagoReturn from './pages/Checkout/MercadoPagoReturn'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
@@ -46,6 +47,7 @@ function App() {
 
           <Route element={<RequireAuth />}>
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout/resultado" element={<MercadoPagoReturn />} />
             <Route path="/account" element={<AccountLayout />}>
               <Route index element={<Profile />} />
               <Route path="addresses" element={<Addresses />} />
