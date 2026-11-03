@@ -11,9 +11,13 @@ import { DEFAULT_SORT, SORT_OPTIONS } from '../../components/ProductFilters/sort
 import { ProductGridSkeleton } from '../../components/ProductCard/ProductCardSkeleton'
 import { fetchProductsList } from '../../store/slices/productsSlice'
 import { fetchCategories } from '../../store/slices/categoriesSlice'
+import { useRecommendations } from '../../components/Recommendations/useRecommendations'
+import RecommendedForYou from './RecommendedForYou'
 
 const PAGE_SIZE = 12
 const GRID_CLASS = 'sm:grid-cols-2 lg:grid-cols-4 gap-5'
+// With the recommendations sidebar the catalog column is narrower, so one column less.
+const GRID_CLASS_WITH_SIDEBAR = 'sm:grid-cols-2 xl:grid-cols-3 gap-5'
 
 function emptyMessage(name, categoryName) {
   if (name && categoryName) return `No hay productos en ${categoryName} que coincidan con "${name}".`
@@ -45,6 +49,7 @@ function Products() {
     error,
   } = useSelector((state) => state.products.list)
   const categories = useSelector((state) => state.categories.items)
+  const recommendations = useRecommendations()
 
   // Filters live in the URL so results are shareable and survive back/forward.
   const [searchParams, setSearchParams] = useSearchParams()
@@ -98,6 +103,18 @@ function Products() {
   }, [dispatch, pageNumber, name, categoryId, sort])
 
   const isLoading = status === 'idle' || status === 'loading'
+  // Suggestions lead the first page; a text search means the user knows what they want.
+  const showRecommendations =
+    recommendations.enabled && recommendations.favoritesCount > 0 && pageNumber === 0 && !name
+  const recommendedItems = categoryId
+    ? recommendations.items.filter((product) => product.categoryIds?.includes(categoryId))
+    : recommendations.items
+  // Nothing worth showing for this filter (or it failed): the catalog takes the full width.
+  const hasSidebar =
+    showRecommendations &&
+    recommendations.status !== 'failed' &&
+    !(recommendations.status === 'succeeded' && recommendedItems.length === 0)
+  const gridClass = hasSidebar ? GRID_CLASS_WITH_SIDEBAR : GRID_CLASS
 
   return (
     <Container as="div" className="py-10 text-left">
@@ -128,22 +145,41 @@ function Products() {
         </div>
       </div>
 
-      {isLoading ? (
-        <ProductGridSkeleton count={PAGE_SIZE} className={GRID_CLASS} />
-      ) : error ? (
-        <Notice variant="error">No se pudieron cargar los productos: {error}</Notice>
-      ) : products.length === 0 ? (
-        <Notice>{emptyMessage(name, categoryName)}</Notice>
-      ) : (
-        <>
-          <div className={`grid grid-cols-1 ${GRID_CLASS} animate-fade-in-up`}>
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
-        </>
-      )}
+      <div className={hasSidebar ? 'grid items-start gap-8 lg:grid-cols-[280px_1fr]' : ''}>
+        {hasSidebar && (
+          <RecommendedForYou
+            items={recommendedItems}
+            status={recommendations.status}
+            source={recommendations.source}
+            favoritesCount={recommendations.favoritesCount}
+            basedOnCount={recommendations.basedOnCount}
+            categoryName={categoryName}
+          />
+        )}
+
+        <div className="min-w-0">
+          {hasSidebar && (
+            <h2 className="mb-5 text-lg font-bold text-dark">{categoryName ? `Todo en ${categoryName}` : 'Todo el catálogo'}</h2>
+          )}
+
+          {isLoading ? (
+            <ProductGridSkeleton count={PAGE_SIZE} className={gridClass} />
+          ) : error ? (
+            <Notice variant="error">No se pudieron cargar los productos: {error}</Notice>
+          ) : products.length === 0 ? (
+            <Notice>{emptyMessage(name, categoryName)}</Notice>
+          ) : (
+            <>
+              <div className={`grid grid-cols-1 ${gridClass} animate-fade-in-up`}>
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+            </>
+          )}
+        </div>
+      </div>
     </Container>
   )
 }
