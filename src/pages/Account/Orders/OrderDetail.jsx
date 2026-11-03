@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '../../../components/ui/Button'
 import Panel from '../../../components/ui/Panel'
@@ -10,11 +10,7 @@ import PaymentMethodForm from '../../../components/checkout/PaymentMethodForm'
 import TransferReferenceForm from '../../../components/checkout/TransferReferenceForm'
 import { fetchOrderById, fetchOrderPayments } from '../../../store/slices/ordersSlice'
 import { attachTransferReference, retryPayment, verifyPayment } from '../../../services/paymentsService'
-import {
-  isPendingMercadoPago,
-  paymentMethodLabel,
-  rememberMercadoPagoCheckout,
-} from '../../../lib/mercadoPagoCheckout'
+import { isPendingMercadoPago, openMercadoPagoCheckout, paymentMethodLabel } from '../../../lib/mercadoPagoCheckout'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -26,6 +22,7 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium', ti
 function OrderDetail() {
   const { id } = useParams()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { item: order, status: orderStatus, error: orderError } = useSelector((state) => state.orders.current)
   const { items: payments, status: paymentsStatus } = useSelector((state) => state.orders.payments)
   const [verifying, setVerifying] = useState(false)
@@ -187,7 +184,7 @@ function OrderDetail() {
                 </p>
                 {verifyMessage && <p className="text-sm text-dark/60">{verifyMessage}</p>}
                 <div className="flex flex-wrap gap-2">
-                  <Button href={latestPayment.checkoutUrl} onClick={() => rememberMercadoPagoCheckout(latestPayment)}>
+                  <Button onClick={() => openMercadoPagoCheckout(latestPayment, navigate)}>
                     Pagar con Mercado Pago
                   </Button>
                   <Button variant="outline" onClick={handleVerifyMercadoPago} disabled={verifying}>

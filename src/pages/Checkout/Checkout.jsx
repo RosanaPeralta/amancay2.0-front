@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import Container from '../../components/ui/Container'
 import Panel from '../../components/ui/Panel'
 import Button from '../../components/ui/Button'
@@ -10,7 +11,12 @@ import { fetchAddresses } from '../../store/slices/addressesSlice'
 import { clear, selectCartItems, selectCartSubtotal } from '../../store/slices/cartSlice'
 import { createOrder } from '../../services/ordersService'
 import { createPayment, retryPayment } from '../../services/paymentsService'
-import { isPendingMercadoPago, redirectToMercadoPago } from '../../lib/mercadoPagoCheckout'
+import {
+  canReturnFromMercadoPago,
+  isPendingMercadoPago,
+  openMercadoPagoCheckout,
+  prepareMercadoPagoTab,
+} from '../../lib/mercadoPagoCheckout'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -19,6 +25,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 
 function Checkout() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const items = useSelector(selectCartItems)
   const subtotal = useSelector(selectCartSubtotal)
   const { items: addresses, status: addressesStatus } = useSelector((state) => state.addresses)
@@ -38,36 +45,49 @@ function Checkout() {
     setSelectedAddressId(defaultAddress.id)
   }
 
-  // Mercado Pago payments are completed on Mercado Pago's site.
-  function handlePaymentResult(result) {
+  // Mercado Pago payments are completed on Mercado Pago's site (see openMercadoPagoCheckout).
+  function handlePaymentResult(result, mercadoPagoTab) {
     setPayment(result)
     if (isPendingMercadoPago(result)) {
-      setRedirecting(true)
-      redirectToMercadoPago(result)
+      setRedirecting(canReturnFromMercadoPago())
+      openMercadoPagoCheckout(result, navigate, mercadoPagoTab)
+    } else {
+      mercadoPagoTab?.close()
     }
   }
 
   // Once the order exists the cart is cleared, even if the payment fails.
   async function handlePlaceOrder({ method, card }) {
-    const createdOrder = await createOrder({
-      shippingAddressId: selectedAddressId,
-      items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
-    })
-    dispatch(clear())
-    setOrder(createdOrder)
-    setAttemptingPayment(true)
+    // Opened before any request so the browser doesn't block it as a pop-up.
+    const mercadoPagoTab = method === 'MERCADO_PAGO' ? prepareMercadoPagoTab() : null
+    let result = null
     try {
-      handlePaymentResult(await createPayment(createdOrder.id, { method, card }))
+      const createdOrder = await createOrder({
+        shippingAddressId: selectedAddressId,
+        items: items.map((item) => ({ productVariantId: item.variantId, quantity: item.quantity })),
+      })
+      dispatch(clear())
+      setOrder(createdOrder)
+      setAttemptingPayment(true)
+      result = await createPayment(createdOrder.id, { method, card })
     } finally {
       setAttemptingPayment(false)
+      if (result) handlePaymentResult(result, mercadoPagoTab)
+      else mercadoPagoTab?.close()
     }
   }
 
   async function handleRetryPayment({ method, card }) {
-    const result = payment
-      ? await retryPayment(payment.id, { method, card })
-      : await createPayment(order.id, { method, card })
-    handlePaymentResult(result)
+    const mercadoPagoTab = method === 'MERCADO_PAGO' ? prepareMercadoPagoTab() : null
+    try {
+      const result = payment
+        ? await retryPayment(payment.id, { method, card })
+        : await createPayment(order.id, { method, card })
+      handlePaymentResult(result, mercadoPagoTab)
+    } catch (err) {
+      mercadoPagoTab?.close()
+      throw err
+    }
   }
 
   if (items.length === 0 && !order) {
@@ -108,7 +128,7 @@ function Checkout() {
               )}
               <p className="font-medium text-dark">Te estamos llevando a Mercado Pago para completar el pago…</p>
               <p className="text-sm text-dark/60">Si no se abre automáticamente, usá el botón.</p>
-              <Button href={payment.checkoutUrl}>Ir a Mercado Pago</Button>
+              <Button onClick={() => openMercadoPagoCheckout(payment, navigate)}>Ir a Mercado Pago</Button>
             </div>
           )}
 
