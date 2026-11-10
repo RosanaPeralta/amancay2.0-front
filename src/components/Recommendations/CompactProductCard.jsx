@@ -20,6 +20,7 @@ function CompactProductCard({ product }) {
         {image ? (
           <img
             src={image.imageUrl}
+            referrerPolicy="no-referrer"
             alt=""
             loading="lazy"
             className="h-full w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
