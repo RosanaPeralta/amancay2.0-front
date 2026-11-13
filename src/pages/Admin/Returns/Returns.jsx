@@ -47,6 +47,7 @@ function Returns() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadRequests()
   }, [])
 
@@ -100,7 +101,7 @@ function Returns() {
   return (
     <div>
       <AdminPageHeader
-        title="Devoluciones"
+        title="Devoluciones Pendientes"
         subtitle={`${requests.length} solicitudes pendientes de resolución`}
       />
 
