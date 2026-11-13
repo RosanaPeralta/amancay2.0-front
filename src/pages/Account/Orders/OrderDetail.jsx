@@ -10,6 +10,7 @@ import PaymentMethodForm from '../../../components/checkout/PaymentMethodForm'
 import TransferReferenceForm from '../../../components/checkout/TransferReferenceForm'
 import { fetchOrderById, fetchOrderPayments } from '../../../store/slices/ordersSlice'
 import { attachTransferReference, retryPayment } from '../../../services/paymentsService'
+import ReturnRequestSection from '../../../components/Returns/ReturnRequestSection'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -125,6 +126,8 @@ function OrderDetail() {
             </div>
           </div>
         </Panel>
+
+        <ReturnRequestSection order={order} />
 
         <Panel title="Pagos">
           <div className="space-y-4">
