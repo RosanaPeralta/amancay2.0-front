@@ -24,6 +24,7 @@ function CategoryTile({ category, imageUrl }) {
         {imageUrl ? (
           <img
             src={imageUrl}
+            referrerPolicy="no-referrer"
             alt=""
             className="max-h-full w-auto object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
           />

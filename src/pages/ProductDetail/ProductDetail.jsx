@@ -108,6 +108,7 @@ function ProductDetail() {
             {activeImage ? (
               <img
                 src={activeImage.imageUrl}
+                referrerPolicy="no-referrer"
                 alt={product.name}
                 className="w-full h-full object-contain"
               />
@@ -126,7 +127,7 @@ function ProductDetail() {
                     index === activeImageIndex ? 'border-primary' : 'border-transparent hover:border-primary/30'
                   }`}
                 >
-                  <img src={image.imageUrl} alt="" className="w-full h-full object-contain" />
+                  <img src={image.imageUrl} referrerPolicy="no-referrer" alt="" className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>

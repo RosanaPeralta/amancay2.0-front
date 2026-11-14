@@ -29,6 +29,7 @@ import Categories from './pages/Admin/Categories/Categories'
 import Discounts from './pages/Admin/Discounts/Discounts'
 import AdminOrders from './pages/Admin/Orders/Orders'
 import Payments from './pages/Admin/Payments/Payments'
+import Returns from './pages/Admin/Returns/Returns'
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
             <Route path="categories" element={<Categories />} />
             <Route path="discounts" element={<Discounts />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="returns" element={<Returns />} />
             <Route path="payments" element={<Payments />} />
             <Route path="users" element={<Users />} />
             <Route path="reviews" element={<Reviews />} />

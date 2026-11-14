@@ -72,6 +72,7 @@ function ProductCard({ product }) {
           {image ? (
             <img
               src={image.imageUrl}
+              referrerPolicy="no-referrer"
               alt={product.name}
               loading="lazy"
               className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"

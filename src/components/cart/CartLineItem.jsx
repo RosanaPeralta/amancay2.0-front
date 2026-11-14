@@ -15,7 +15,7 @@ function CartLineItem({ item }) {
     <li className="flex flex-wrap items-center gap-4 rounded-2xl border border-dark/5 bg-white p-5 shadow-sm">
       <div className="h-16 w-16 shrink-0 rounded-xl bg-mist overflow-hidden flex items-center justify-center">
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-contain" />
+          <img src={item.imageUrl} referrerPolicy="no-referrer" alt={item.productName} className="w-full h-full object-contain" />
         ) : (
           <span className="caption-text">Sin imagen</span>
         )}
