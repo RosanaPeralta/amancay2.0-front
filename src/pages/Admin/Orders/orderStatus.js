@@ -1,13 +1,25 @@
 // Mirrors the backend's OrderStatus.
-export const ORDER_STATUSES = ['CREADO', 'EN_PREPARACION', 'DESPACHADO', 'ENTREGADO', 'DEVUELTO']
+export const ORDER_STATUSES = [
+  'CREADO',
+  'EN_PREPARACION',
+  'LISTO_PARA_DESPACHAR',
+  'DESPACHADO',
+  'ENTREGADO',
+  'ESPERANDO_RETIRO',
+  'RETIRADO',
+  'DEVUELTO',
+]
 
 // Who moves each status forward (mirrors OrderStatus/OrderTransitionTrigger in the backend):
-// the approved payment, the logistics queue (RabbitMQ) or an approved return request.
+// the approved payment, external logistics (RabbitMQ) or an approved return request.
 const ADVANCED_BY = {
   CREADO: 'PAYMENT',
-  EN_PREPARACION: 'FULFILLMENT',
-  DESPACHADO: 'FULFILLMENT',
+  EN_PREPARACION: 'LOGISTICS',
+  LISTO_PARA_DESPACHAR: 'LOGISTICS',
+  DESPACHADO: 'LOGISTICS',
   ENTREGADO: 'RETURN_REQUEST',
+  ESPERANDO_RETIRO: 'LOGISTICS',
+  RETIRADO: 'LOGISTICS',
 }
 
 export const advancedBy = (status) => ADVANCED_BY[status] ?? null
@@ -15,8 +27,11 @@ export const advancedBy = (status) => ADVANCED_BY[status] ?? null
 const STATUS_LABELS = {
   CREADO: 'Creado',
   EN_PREPARACION: 'En preparación',
+  LISTO_PARA_DESPACHAR: 'Listo para despachar',
   DESPACHADO: 'Despachado',
   ENTREGADO: 'Entregado',
+  ESPERANDO_RETIRO: 'Esperando retiro',
+  RETIRADO: 'Retirado',
   DEVUELTO: 'Devuelto',
 }
 

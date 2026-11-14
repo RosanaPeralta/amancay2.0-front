@@ -9,9 +9,9 @@ import { advancedBy, shortId } from './orderStatus'
 // The admin panel only shows the status: who moves each step forward is fixed by the backend.
 const STATUS_NOTES = {
   PAYMENT: 'Esperando la aprobación del pago: pasa a preparación sola cuando se aprueba.',
-  FULFILLMENT:
+  LOGISTICS:
     'Lo avanza la logística externa publicando en RabbitMQ (consola de logística). Actualizá para ver el nuevo estado.',
-  RETURN_REQUEST: 'Entregado. Solo pasa a devuelto si se aprueba una solicitud de devolución.',
+  RETURN_REQUEST: 'Entregado. Solo pasa a esperando retiro si se aprueba una solicitud de devolución.',
 }
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
@@ -73,7 +73,7 @@ function OrderDetail({ order }) {
 
       <div className="mt-5">
         <p className="text-xs text-dark/50">{STATUS_NOTES[statusBy] ?? 'Este pedido ya no admite más cambios de estado.'}</p>
-        {statusBy === 'FULFILLMENT' && (
+        {statusBy === 'LOGISTICS' && (
           <Button variant="outline" className="mt-3 w-full" onClick={handleRefresh} disabled={refreshing}>
             {refreshing ? 'Actualizando...' : 'Actualizar estado'}
           </Button>
