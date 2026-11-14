@@ -1,12 +1,5 @@
-// Mirrors the backend's OrderStatus: each state can only move to the next one.
+// Mirrors the backend's OrderStatus.
 export const ORDER_STATUSES = ['CREADO', 'EN_PREPARACION', 'DESPACHADO', 'ENTREGADO', 'DEVUELTO']
-
-export const NEXT_STATUS = {
-  CREADO: 'EN_PREPARACION',
-  EN_PREPARACION: 'DESPACHADO',
-  DESPACHADO: 'ENTREGADO',
-  ENTREGADO: 'DEVUELTO',
-}
 
 // Who moves each status forward (mirrors OrderStatus/OrderTransitionTrigger in the backend):
 // the approved payment, the logistics queue (RabbitMQ) or an approved return request.
@@ -18,9 +11,6 @@ const ADVANCED_BY = {
 }
 
 export const advancedBy = (status) => ADVANCED_BY[status] ?? null
-
-// The next status the admin can queue, or null when it is not up to the logistics queue.
-export const nextQueuedStatus = (status) => (advancedBy(status) === 'FULFILLMENT' ? NEXT_STATUS[status] : null)
 
 const STATUS_LABELS = {
   CREADO: 'Creado',

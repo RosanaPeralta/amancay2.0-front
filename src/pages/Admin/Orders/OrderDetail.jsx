@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import AdminCard from '../../../components/admin/AdminCard'
 import Button from '../../../components/ui/Button'
-import { refreshAdminOrder, requestOrderAdvance } from '../../../store/slices/adminOrdersSlice'
+import { fetchAdminOrders } from '../../../store/slices/adminOrdersSlice'
 import OrderStatusPill from './OrderStatusPill'
-import { advancedBy, nextQueuedStatus, shortId, statusLabel } from './orderStatus'
+import { advancedBy, shortId } from './orderStatus'
 
-// While the logistics queue applies a change, re-read the order every POLL_MS up to POLL_ATTEMPTS times.
-const POLL_MS = 1500
-const POLL_ATTEMPTS = 12
-
-const WAITING_NOTES = {
+// The admin panel only shows the status: who moves each step forward is fixed by the backend.
+const STATUS_NOTES = {
   PAYMENT: 'Esperando la aprobación del pago: pasa a preparación sola cuando se aprueba.',
+  FULFILLMENT:
+    'Lo avanza la logística externa publicando en RabbitMQ (consola de logística). Actualizá para ver el nuevo estado.',
   RETURN_REQUEST: 'Entregado. Solo pasa a devuelto si se aprueba una solicitud de devolución.',
 }
 
@@ -21,39 +20,14 @@ const formatDate = (date) =>
 
 function OrderDetail({ order }) {
   const dispatch = useDispatch()
-  const [queued, setQueued] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
 
-  const nextStatus = nextQueuedStatus(order.status)
+  const statusBy = advancedBy(order.status)
 
-  // The parent remounts this card when the status changes, which also stops the polling.
-  useEffect(() => {
-    if (!queued) return undefined
-    let attempts = 0
-    const timer = setInterval(() => {
-      attempts += 1
-      dispatch(refreshAdminOrder({ id: order.id, userId: order.userId }))
-      if (attempts >= POLL_ATTEMPTS) {
-        clearInterval(timer)
-        setQueued(false)
-        setError('La cola todavía no aplicó el cambio. Revisá la dead letter queue en RabbitMQ.')
-      }
-    }, POLL_MS)
-    return () => clearInterval(timer)
-  }, [queued, dispatch, order.id, order.userId])
-
-  async function handleAdvance() {
-    setError(null)
-    setSaving(true)
-    try {
-      await dispatch(requestOrderAdvance({ id: order.id, status: nextStatus })).unwrap()
-      setQueued(true)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
+  async function handleRefresh() {
+    setRefreshing(true)
+    await dispatch(fetchAdminOrders())
+    setRefreshing(false)
   }
 
   return (
@@ -98,25 +72,12 @@ function OrderDetail({ order }) {
       </div>
 
       <div className="mt-5">
-        {nextStatus ? (
-          <>
-            <Button className="w-full" onClick={handleAdvance} disabled={saving || queued}>
-              {saving
-                ? 'Enviando...'
-                : queued
-                  ? 'Procesando en la cola...'
-                  : `Marcar como ${statusLabel(nextStatus).toLowerCase()}`}
-            </Button>
-            <p className="mt-2 text-xs text-dark/50">
-              El cambio se encola y lo aplica la logística; el estado se actualiza en unos segundos.
-            </p>
-          </>
-        ) : (
-          <p className="text-xs text-dark/50">
-            {WAITING_NOTES[advancedBy(order.status)] ?? 'Este pedido ya no admite más cambios de estado.'}
-          </p>
+        <p className="text-xs text-dark/50">{STATUS_NOTES[statusBy] ?? 'Este pedido ya no admite más cambios de estado.'}</p>
+        {statusBy === 'FULFILLMENT' && (
+          <Button variant="outline" className="mt-3 w-full" onClick={handleRefresh} disabled={refreshing}>
+            {refreshing ? 'Actualizando...' : 'Actualizar estado'}
+          </Button>
         )}
-        {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       </div>
     </AdminCard>
   )

@@ -20,14 +20,3 @@ export function createOrder(data) {
 export function listAllOrders() {
   return httpClient.get('/admin/orders')
 }
-
-// Admin only: any buyer's order.
-export function getOrderOf(id, userId) {
-  return httpClient.get(`/orders/${id}?userId=${userId}`)
-}
-
-// Admin only. From EN_PREPARACION on, the status moves through the logistics queue:
-// the API answers 202 with the queued command and the order changes a moment later.
-export function requestOrderAdvance(id, status) {
-  return httpClient.patch(`/orders/${id}/status`, { status })
-}
