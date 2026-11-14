@@ -25,7 +25,7 @@ function ProductRow({ product, categoryName }) {
       <td className={tdClass}>
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mist">
-            {image && <img src={image.imageUrl} alt="" className="h-full w-full object-contain mix-blend-multiply" />}
+            {image && <img src={image.imageUrl} referrerPolicy="no-referrer" alt="" className="h-full w-full object-contain mix-blend-multiply" />}
           </span>
           <div className="min-w-0 max-w-[22rem]">
             <p className="truncate font-bold text-dark">{product.name}</p>

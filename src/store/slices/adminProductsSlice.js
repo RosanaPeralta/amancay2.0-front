@@ -8,7 +8,7 @@ export const fetchAdminProducts = createAsyncThunk(
   'adminProducts/fetchAll',
   async () => {
     const page = await productsService.listProducts({ page: 0, size: 100 })
-    return Promise.all(page.content.map((summary) => productsService.getProduct(summary.id)))
+    return page.content
   },
   {
     condition: (_, { getState }) => {

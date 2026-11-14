@@ -10,6 +10,7 @@ import PaymentMethodForm from '../../../components/checkout/PaymentMethodForm'
 import TransferReferenceForm from '../../../components/checkout/TransferReferenceForm'
 import { fetchOrderById, fetchOrderPayments } from '../../../store/slices/ordersSlice'
 import { attachTransferReference, retryPayment } from '../../../services/paymentsService'
+import ReturnRequestSection from '../../../components/Returns/ReturnRequestSection'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -91,7 +92,7 @@ function OrderDetail() {
               <li key={item.id} className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-mist">
-                    {item.imageUrl && <img src={item.imageUrl} alt="" className="h-full w-full object-contain" />}
+                    {item.imageUrl && <img src={item.imageUrl} referrerPolicy="no-referrer" alt="" className="h-full w-full object-contain" />}
                   </div>
                   <div className="min-w-0">
                     {item.productId ? (
@@ -125,6 +126,8 @@ function OrderDetail() {
             </div>
           </div>
         </Panel>
+
+        <ReturnRequestSection order={order} />
 
         <Panel title="Pagos">
           <div className="space-y-4">

@@ -59,7 +59,7 @@ function ImagesSection({ values, errors, setField }) {
         <div className="mt-4 flex flex-wrap gap-3">
           {values.images.map((image, index) => (
             <div key={`${image.id ?? 'new'}-${index}`} className="relative h-24 w-24 overflow-hidden rounded-xl bg-mist">
-              <img src={image.imageUrl} alt="" className="h-full w-full object-contain mix-blend-multiply" />
+              <img src={image.imageUrl} referrerPolicy="no-referrer" alt="" className="h-full w-full object-contain mix-blend-multiply" />
               <button
                 type="button"
                 onClick={() => handleDelete(index)}
