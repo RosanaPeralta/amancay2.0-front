@@ -8,6 +8,20 @@ export const NEXT_STATUS = {
   ENTREGADO: 'DEVUELTO',
 }
 
+// Who moves each status forward (mirrors OrderStatus/OrderTransitionTrigger in the backend):
+// the approved payment, the logistics queue (RabbitMQ) or an approved return request.
+const ADVANCED_BY = {
+  CREADO: 'PAYMENT',
+  EN_PREPARACION: 'FULFILLMENT',
+  DESPACHADO: 'FULFILLMENT',
+  ENTREGADO: 'RETURN_REQUEST',
+}
+
+export const advancedBy = (status) => ADVANCED_BY[status] ?? null
+
+// The next status the admin can queue, or null when it is not up to the logistics queue.
+export const nextQueuedStatus = (status) => (advancedBy(status) === 'FULFILLMENT' ? NEXT_STATUS[status] : null)
+
 const STATUS_LABELS = {
   CREADO: 'Creado',
   EN_PREPARACION: 'En preparación',

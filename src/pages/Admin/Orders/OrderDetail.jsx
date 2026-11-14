@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import AdminCard from '../../../components/admin/AdminCard'
 import Button from '../../../components/ui/Button'
-import { changeOrderStatus } from '../../../store/slices/adminOrdersSlice'
+import { refreshAdminOrder, requestOrderAdvance } from '../../../store/slices/adminOrdersSlice'
 import OrderStatusPill from './OrderStatusPill'
-import { NEXT_STATUS, shortId, statusLabel } from './orderStatus'
+import { advancedBy, nextQueuedStatus, shortId, statusLabel } from './orderStatus'
+
+// While the logistics queue applies a change, re-read the order every POLL_MS up to POLL_ATTEMPTS times.
+const POLL_MS = 1500
+const POLL_ATTEMPTS = 12
+
+const WAITING_NOTES = {
+  PAYMENT: 'Esperando la aprobación del pago: pasa a preparación sola cuando se aprueba.',
+  RETURN_REQUEST: 'Entregado. Solo pasa a devuelto si se aprueba una solicitud de devolución.',
+}
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 const formatDate = (date) =>
@@ -12,18 +21,37 @@ const formatDate = (date) =>
 
 function OrderDetail({ order }) {
   const dispatch = useDispatch()
+  const [queued, setQueued] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
-  const nextStatus = NEXT_STATUS[order.status]
+  const nextStatus = nextQueuedStatus(order.status)
+
+  // The parent remounts this card when the status changes, which also stops the polling.
+  useEffect(() => {
+    if (!queued) return undefined
+    let attempts = 0
+    const timer = setInterval(() => {
+      attempts += 1
+      dispatch(refreshAdminOrder({ id: order.id, userId: order.userId }))
+      if (attempts >= POLL_ATTEMPTS) {
+        clearInterval(timer)
+        setQueued(false)
+        setError('La cola todavía no aplicó el cambio. Revisá la dead letter queue en RabbitMQ.')
+      }
+    }, POLL_MS)
+    return () => clearInterval(timer)
+  }, [queued, dispatch, order.id, order.userId])
 
   async function handleAdvance() {
     setError(null)
     setSaving(true)
     try {
-      await dispatch(changeOrderStatus({ id: order.id, status: nextStatus })).unwrap()
+      await dispatch(requestOrderAdvance({ id: order.id, status: nextStatus })).unwrap()
+      setQueued(true)
     } catch (err) {
       setError(err.message)
+    } finally {
       setSaving(false)
     }
   }
@@ -72,17 +100,21 @@ function OrderDetail({ order }) {
       <div className="mt-5">
         {nextStatus ? (
           <>
-            <Button className="w-full" onClick={handleAdvance} disabled={saving}>
-              {saving ? 'Actualizando...' : `Marcar como ${statusLabel(nextStatus).toLowerCase()}`}
+            <Button className="w-full" onClick={handleAdvance} disabled={saving || queued}>
+              {saving
+                ? 'Enviando...'
+                : queued
+                  ? 'Procesando en la cola...'
+                  : `Marcar como ${statusLabel(nextStatus).toLowerCase()}`}
             </Button>
-            {order.status === 'CREADO' && (
-              <p className="mt-2 text-xs text-dark/50">
-                Pasa a preparación sola cuando se aprueba el pago. Avánzalo a mano solo si ya lo cobraste por otro medio.
-              </p>
-            )}
+            <p className="mt-2 text-xs text-dark/50">
+              El cambio se encola y lo aplica la logística; el estado se actualiza en unos segundos.
+            </p>
           </>
         ) : (
-          <p className="text-xs text-dark/50">Este pedido ya no admite más cambios de estado.</p>
+          <p className="text-xs text-dark/50">
+            {WAITING_NOTES[advancedBy(order.status)] ?? 'Este pedido ya no admite más cambios de estado.'}
+          </p>
         )}
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       </div>
