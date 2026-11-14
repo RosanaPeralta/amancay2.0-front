@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
+import MercadoPagoInfo from './MercadoPagoInfo'
 
 const METHODS = [
   { value: 'TARJETA_CREDITO', label: 'Tarjeta de crédito' },
   { value: 'TARJETA_DEBITO', label: 'Tarjeta de débito' },
   { value: 'TRANSFERENCIA', label: 'Transferencia bancaria' },
+  { value: 'MERCADO_PAGO', label: 'Mercado Pago' },
 ]
 
 const EMPTY_CARD = { number: '', holderName: '', expiry: '', cvv: '' }
@@ -60,6 +62,7 @@ function PaymentMethodForm({ onSubmit, submitLabel = 'Pagar', disabled = false }
   const [submitting, setSubmitting] = useState(false)
 
   const isCard = method === 'TARJETA_CREDITO' || method === 'TARJETA_DEBITO'
+  const isMercadoPago = method === 'MERCADO_PAGO'
   const FORMATTERS = {
     number: formatCardNumber,
     expiry: formatExpiry,
@@ -154,6 +157,8 @@ function PaymentMethodForm({ onSubmit, submitLabel = 'Pagar', disabled = false }
             error={fieldErrors.cvv}
           />
         </div>
+      ) : isMercadoPago ? (
+        <MercadoPagoInfo />
       ) : (
         <p className="text-dark text-sm">
           El pedido queda registrado y el pago figura como pendiente hasta que lo confirmemos manualmente.
@@ -163,7 +168,13 @@ function PaymentMethodForm({ onSubmit, submitLabel = 'Pagar', disabled = false }
       {error && <p className="text-sm text-danger">{error}</p>}
 
       <Button type="submit" className="w-full" disabled={disabled || submitting}>
-        {submitting ? 'Procesando...' : submitLabel}
+        {submitting
+          ? isMercadoPago
+            ? 'Conectando con Mercado Pago...'
+            : 'Procesando...'
+          : isMercadoPago
+            ? 'Continuar a Mercado Pago'
+            : submitLabel}
       </Button>
     </form>
   )
