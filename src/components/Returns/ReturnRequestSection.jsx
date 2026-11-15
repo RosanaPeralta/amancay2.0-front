@@ -30,6 +30,9 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
   timeStyle: 'short',
 })
 
+// Delivered orders can ask for a return; after approval logistics picks it up and returns it.
+const RETURN_STATUSES = ['ENTREGADO', 'ESPERANDO_RETIRO', 'RETIRADO', 'DEVUELTO']
+
 function ReturnRequestSection({ order }) {
   const [returnRequest, setReturnRequest] = useState(null)
   const [reason, setReason] = useState('')
@@ -42,7 +45,7 @@ function ReturnRequestSection({ order }) {
     let active = true
 
     async function loadReturnRequest() {
-      if (!['ENTREGADO', 'DEVUELTO'].includes(order.status)) {
+      if (!RETURN_STATUSES.includes(order.status)) {
         setLoading(false)
         return
       }
@@ -92,7 +95,7 @@ function ReturnRequestSection({ order }) {
     }
   }
 
-  if (!['ENTREGADO', 'DEVUELTO'].includes(order.status)) return null
+  if (!RETURN_STATUSES.includes(order.status)) return null
 
   const deliveredAt = order.deliveredAt ? new Date(order.deliveredAt) : null
   const deadline = deliveredAt

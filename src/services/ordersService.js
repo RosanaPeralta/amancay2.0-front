@@ -20,7 +20,3 @@ export function createOrder(data) {
 export function listAllOrders() {
   return httpClient.get('/admin/orders')
 }
-
-export function changeOrderStatus(id, status) {
-  return httpClient.patch(`/orders/${id}/status`, { status })
-}

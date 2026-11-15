@@ -2,9 +2,17 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import AdminCard from '../../../components/admin/AdminCard'
 import Button from '../../../components/ui/Button'
-import { changeOrderStatus } from '../../../store/slices/adminOrdersSlice'
+import { fetchAdminOrders } from '../../../store/slices/adminOrdersSlice'
 import OrderStatusPill from './OrderStatusPill'
-import { NEXT_STATUS, shortId, statusLabel } from './orderStatus'
+import { advancedBy, shortId } from './orderStatus'
+
+// The admin panel only shows the status: who moves each step forward is fixed by the backend.
+const STATUS_NOTES = {
+  PAYMENT: 'Esperando la aprobación del pago: pasa a preparación sola cuando se aprueba.',
+  LOGISTICS:
+    'Lo avanza la logística externa publicando en RabbitMQ (consola de logística). Actualizá para ver el nuevo estado.',
+  RETURN_REQUEST: 'Entregado. Solo pasa a esperando retiro si se aprueba una solicitud de devolución.',
+}
 
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 const formatDate = (date) =>
@@ -12,20 +20,14 @@ const formatDate = (date) =>
 
 function OrderDetail({ order }) {
   const dispatch = useDispatch()
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
 
-  const nextStatus = NEXT_STATUS[order.status]
+  const statusBy = advancedBy(order.status)
 
-  async function handleAdvance() {
-    setError(null)
-    setSaving(true)
-    try {
-      await dispatch(changeOrderStatus({ id: order.id, status: nextStatus })).unwrap()
-    } catch (err) {
-      setError(err.message)
-      setSaving(false)
-    }
+  async function handleRefresh() {
+    setRefreshing(true)
+    await dispatch(fetchAdminOrders())
+    setRefreshing(false)
   }
 
   return (
@@ -70,21 +72,12 @@ function OrderDetail({ order }) {
       </div>
 
       <div className="mt-5">
-        {nextStatus ? (
-          <>
-            <Button className="w-full" onClick={handleAdvance} disabled={saving}>
-              {saving ? 'Actualizando...' : `Marcar como ${statusLabel(nextStatus).toLowerCase()}`}
-            </Button>
-            {order.status === 'CREADO' && (
-              <p className="mt-2 text-xs text-dark/50">
-                Pasa a preparación sola cuando se aprueba el pago. Avánzalo a mano solo si ya lo cobraste por otro medio.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="text-xs text-dark/50">Este pedido ya no admite más cambios de estado.</p>
+        <p className="text-xs text-dark/50">{STATUS_NOTES[statusBy] ?? 'Este pedido ya no admite más cambios de estado.'}</p>
+        {statusBy === 'LOGISTICS' && (
+          <Button variant="outline" className="mt-3 w-full" onClick={handleRefresh} disabled={refreshing}>
+            {refreshing ? 'Actualizando...' : 'Actualizar estado'}
+          </Button>
         )}
-        {error && <p className="mt-2 text-sm text-danger">{error}</p>}
       </div>
     </AdminCard>
   )

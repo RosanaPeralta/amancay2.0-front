@@ -32,7 +32,7 @@ function Orders() {
       (!query || order.id.toLowerCase().includes(query) || order.buyerEmail?.toLowerCase().includes(query)),
   )
   const selected = orders.find((order) => order.id === selectedId) ?? visible[0]
-  const toShip = orders.filter((order) => order.status === 'EN_PREPARACION').length
+  const toShip = orders.filter((order) => ['EN_PREPARACION', 'LISTO_PARA_DESPACHAR'].includes(order.status)).length
 
   const isLoading = status === 'idle' || (status === 'loading' && orders.length === 0)
 

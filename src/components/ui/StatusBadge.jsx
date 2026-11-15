@@ -4,8 +4,11 @@ const styles = {
   // Order status
   CREADO: 'border-dark/10 text-dark/60',
   EN_PREPARACION: 'border-primary/30 text-primary',
+  LISTO_PARA_DESPACHAR: 'border-primary/30 text-primary',
   DESPACHADO: 'border-primary/30 text-primary',
   ENTREGADO: 'border-primary/30 text-primary',
+  ESPERANDO_RETIRO: 'border-dark/10 text-dark/60',
+  RETIRADO: 'border-dark/10 text-dark/60',
   DEVUELTO: 'border-danger/30 text-danger',
   // Payment status
   PENDIENTE: 'border-dark/10 text-dark/60',
@@ -18,8 +21,11 @@ const labels = {
   HIDDEN: 'Oculta',
   CREADO: 'Creado',
   EN_PREPARACION: 'En preparación',
+  LISTO_PARA_DESPACHAR: 'Listo para despachar',
   DESPACHADO: 'Despachado',
   ENTREGADO: 'Entregado',
+  ESPERANDO_RETIRO: 'Esperando retiro',
+  RETIRADO: 'Retirado',
   DEVUELTO: 'Devuelto',
   PENDIENTE: 'Pendiente',
   APROBADO: 'Aprobado',
